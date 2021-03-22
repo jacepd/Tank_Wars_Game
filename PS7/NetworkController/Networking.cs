@@ -21,7 +21,15 @@ namespace NetworkUtil
         /// <param name="port">The the port to listen on</param>
         public static TcpListener StartServer(Action<SocketState> toCall, int port)
         {
-            throw new NotImplementedException();
+            TcpListener listener = new TcpListener(IPAddress.Any, port);
+
+            listener.Start();
+
+            Tuple<TcpListener, Action<SocketState>> args = new Tuple<TcpListener, Action<SocketState>>(listener, toCall);
+
+            listener.BeginAcceptSocket(AcceptNewClient, args);
+
+            return listener;
         }
 
         /// <summary>
@@ -44,7 +52,18 @@ namespace NetworkUtil
         /// 1) a delegate so the user can take action (a SocketState Action), and 2) the TcpListener</param>
         private static void AcceptNewClient(IAsyncResult ar)
         {
-            throw new NotImplementedException();
+            Tuple<TcpListener, Action<SocketState>> args = (Tuple<TcpListener, Action<SocketState>>)ar.AsyncState;
+
+            TcpListener listener = args.Item1;
+
+            Socket s = listener.EndAcceptSocket(ar);
+
+            Action<SocketState> toCall = args.Item2;
+
+            SocketState state = new SocketState(toCall, s);
+            state.OnNetworkAction.Invoke(state);
+
+            listener.BeginAcceptSocket(AcceptNewClient, toCall);
         }
 
         /// <summary>
@@ -52,7 +71,7 @@ namespace NetworkUtil
         /// </summary>
         public static void StopServer(TcpListener listener)
         {
-            throw new NotImplementedException();
+            listener.Stop();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
