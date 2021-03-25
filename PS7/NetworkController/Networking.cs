@@ -27,7 +27,14 @@ namespace NetworkUtil
 
             Tuple<TcpListener, Action<SocketState>> args = new Tuple<TcpListener, Action<SocketState>>(listener, toCall);
 
-            listener.BeginAcceptSocket(AcceptNewClient, args);
+            try
+            {
+                listener.BeginAcceptSocket(AcceptNewClient, args);
+            }
+            catch
+            {
+                SetErrorFlag(new SocketState(toCall, null), "Could not begin connection.");               
+            }
 
             return listener;
         }
@@ -52,18 +59,26 @@ namespace NetworkUtil
         /// 1) a delegate so the user can take action (a SocketState Action), and 2) the TcpListener</param>
         private static void AcceptNewClient(IAsyncResult ar)
         {
+            // Remove arguments from AsyncResult
             Tuple<TcpListener, Action<SocketState>> args = (Tuple<TcpListener, Action<SocketState>>)ar.AsyncState;
-
             TcpListener listener = args.Item1;
-
-            Socket s = listener.EndAcceptSocket(ar);
-
             Action<SocketState> toCall = args.Item2;
 
-            SocketState state = new SocketState(toCall, s);
-            state.OnNetworkAction.Invoke(state);
+            try
+            {
+                Socket newSocket = listener.EndAcceptSocket(ar);
+                newSocket.NoDelay = true;
 
-            listener.BeginAcceptSocket(AcceptNewClient, toCall);
+                SocketState state = new SocketState(toCall, newSocket);
+                state.OnNetworkAction(state);
+
+                // Continue the event loop
+                listener.BeginAcceptSocket(AcceptNewClient, toCall);
+            }
+            catch
+            {
+                SetErrorFlag(new SocketState(toCall, null), "Error finalizing connection.");
+            }           
         }
 
         /// <summary>
@@ -119,6 +134,7 @@ namespace NetworkUtil
                 if (!foundIPV4)
                 {
                     // TODO: Indicate an error to the user, as specified in the documentation
+                    SetErrorFlag(new SocketState(toCall, null), "Didn't find and IPV4 addresses");
                 }
             }
             catch (Exception)
@@ -131,6 +147,7 @@ namespace NetworkUtil
                 catch (Exception)
                 {
                     // TODO: Indicate an error to the user, as specified in the documentation
+                    SetErrorFlag(new SocketState(toCall, null), "Host name is not valid IP address");
                 }
             }
 
@@ -143,6 +160,18 @@ namespace NetworkUtil
             socket.NoDelay = true;
 
             // TODO: Finish the remainder of the connection process as specified.
+            SocketState state = new SocketState(toCall, socket);
+
+            try
+            {
+                socket.BeginConnect(ipAddress, port, ConnectedCallback, state);
+            }
+            catch
+            {
+                SetErrorFlag(new SocketState(toCall, null), "Could not connect to server");
+            }
+
+            // timeout stuff here
         }
 
         /// <summary>
@@ -160,7 +189,18 @@ namespace NetworkUtil
         /// <param name="ar">The object asynchronously passed via BeginConnect</param>
         private static void ConnectedCallback(IAsyncResult ar)
         {
-            throw new NotImplementedException();
+            SocketState state = (SocketState)ar.AsyncState;
+
+           try
+            {
+                state.TheSocket.EndConnect(ar);
+
+                state.OnNetworkAction(state);
+            }
+            catch
+            {
+                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Error finalizing connection to server");
+            }
         }
 
 
@@ -181,7 +221,14 @@ namespace NetworkUtil
         /// <param name="state">The SocketState to begin receiving</param>
         public static void GetData(SocketState state)
         {
-            throw new NotImplementedException();
+            try
+            {
+                state.TheSocket.BeginReceive(state.buffer, 0, state.buffer.Length, SocketFlags.None, ReceiveCallback, state);
+            }
+            catch
+            {
+                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Issue receiving data");
+            }
         }
 
         /// <summary>
@@ -203,7 +250,32 @@ namespace NetworkUtil
         /// </param>
         private static void ReceiveCallback(IAsyncResult ar)
         {
-            throw new NotImplementedException();
+            SocketState state = (SocketState)ar.AsyncState;
+            int numBytes = 0;
+            try
+            {
+                numBytes = state.TheSocket.EndReceive(ar);               
+            }
+            catch
+            {
+                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Error when trying to receive data");
+            }
+
+            // Make sure numBytes isn't empty
+            if (numBytes == 0)
+            {
+                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Socket was closed while receiving data");
+            }
+
+            // Parse the message
+            string message = Encoding.UTF8.GetString(state.buffer, 0, numBytes);
+            lock (state.data)
+            {
+                state.data.Append(message);
+            }          
+
+            // Call saved delegate
+            state.OnNetworkAction(state);
         }
 
         /// <summary>
@@ -218,7 +290,24 @@ namespace NetworkUtil
         /// <returns>True if the send process was started, false if an error occurs or the socket is already closed</returns>
         public static bool Send(Socket socket, string data)
         {
-            throw new NotImplementedException();
+            // Don't attempt to send if soscket is closed
+            if (!socket.Connected)
+            {
+                return false;
+            }
+
+            byte[] dataBuffer = Encoding.UTF8.GetBytes(data);
+
+            try
+            {
+                socket.BeginSend(dataBuffer, 0, data.Length, SocketFlags.None, SendCallback, socket);
+                return true;
+            }
+            catch
+            {
+                socket.Close();
+                return false;
+            }            
         }
 
         /// <summary>
@@ -234,7 +323,16 @@ namespace NetworkUtil
         /// </param>
         private static void SendCallback(IAsyncResult ar)
         {
-            throw new NotImplementedException();
+            Socket socket = (Socket)ar.AsyncState;
+
+            try
+            {
+                socket.EndSend(ar);
+            }
+            catch
+            {
+                // ???
+            }
         }
 
 
@@ -251,7 +349,24 @@ namespace NetworkUtil
         /// <returns>True if the send process was started, false if an error occurs or the socket is already closed</returns>
         public static bool SendAndClose(Socket socket, string data)
         {
-            throw new NotImplementedException();
+            // Don't attempt to send if soscket is closed
+            if (!socket.Connected)
+            {
+                return false;
+            }
+
+            byte[] dataBuffer = Encoding.UTF8.GetBytes(data);
+
+            try
+            {
+                socket.BeginSend(dataBuffer, 0, data.Length, SocketFlags.None, SendAndCloseCallback, socket);
+                return true;
+            }
+            catch
+            {
+                socket.Close();
+                return false;
+            }
         }
 
         /// <summary>
@@ -269,7 +384,30 @@ namespace NetworkUtil
         /// </param>
         private static void SendAndCloseCallback(IAsyncResult ar)
         {
-            throw new NotImplementedException();
+            Socket socket = (Socket)ar.AsyncState;
+
+            try
+            {
+                socket.EndSend(ar);                   
+            }
+            catch
+            {
+                socket.Close();
+            }
+
+            socket.Close();
+        }
+
+        /// <summary>
+        /// Sets the ErrorOccured flag to true and invokes the OnNetworkAction
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="message"></param>
+        private static void SetErrorFlag(SocketState state, string message)
+        {
+            state.ErrorOccurred = true;
+            state.ErrorMessage = message;
+            state.OnNetworkAction(state);
         }
 
     }
