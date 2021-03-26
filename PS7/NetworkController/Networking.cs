@@ -23,12 +23,13 @@ namespace NetworkUtil
         /// <param name="port">The the port to listen on</param>
         public static TcpListener StartServer(Action<SocketState> toCall, int port)
         {
+            // Create a new listener
             TcpListener listener = new TcpListener(IPAddress.Any, port);
-
             listener.Start();
 
             Tuple<TcpListener, Action<SocketState>> args = new Tuple<TcpListener, Action<SocketState>>(listener, toCall);
 
+            // Begin the connection
             try
             {
                 listener.BeginAcceptSocket(AcceptNewClient, args);
@@ -65,9 +66,10 @@ namespace NetworkUtil
             Tuple<TcpListener, Action<SocketState>> args = (Tuple<TcpListener, Action<SocketState>>)ar.AsyncState;
             TcpListener listener = args.Item1;
             Action<SocketState> toCall = args.Item2;
-
+           
             try
             {
+                // Create a new socket for the client
                 Socket newSocket = listener.EndAcceptSocket(ar);
                 newSocket.NoDelay = true;
 
@@ -165,10 +167,13 @@ namespace NetworkUtil
 
             // TODO: Finish the remainder of the connection process as specified.
             SocketState state = new SocketState(toCall, socket);
-
+           
             try
             {
+                // Begin connection to server
                 IAsyncResult result = socket.BeginConnect(ipAddress, port, ConnectedCallback, state);
+
+                // Timeout if not connected in 3 seconds
                 bool connected = result.AsyncWaitHandle.WaitOne(3000);
 
                 if (!connected)
@@ -199,13 +204,15 @@ namespace NetworkUtil
         {
             SocketState state = (SocketState)ar.AsyncState;
 
+            // Make sure connection hasn't timed out
             if (!state.TheSocket.Connected)
             {
                 SetErrorFlag(state, "Socket was closed due to timeout");
                 return;
             }
 
-           try
+            // Finalize the connection
+            try
             {
                 state.TheSocket.EndConnect(ar);
 
@@ -265,8 +272,9 @@ namespace NetworkUtil
         private static void ReceiveCallback(IAsyncResult ar)
         {
             SocketState state = (SocketState)ar.AsyncState;
-            int numBytes = 0;
+            int numBytes = 0; // The number of bites recieved
 
+            // Finalize receive
             try
             {
                 numBytes = state.TheSocket.EndReceive(ar);               
@@ -307,14 +315,16 @@ namespace NetworkUtil
         /// <returns>True if the send process was started, false if an error occurs or the socket is already closed</returns>
         public static bool Send(Socket socket, string data)
         {
-            // Don't attempt to send if soscket is closed
+            // Don't attempt to send if socket is closed
             if (!socket.Connected)
             {
                 return false;
             }
 
+            // Convert data to bites
             byte[] dataBuffer = Encoding.UTF8.GetBytes(data);
 
+            // Send data
             try
             {
                 socket.BeginSend(dataBuffer, 0, data.Length, SocketFlags.None, SendCallback, socket);
@@ -348,7 +358,7 @@ namespace NetworkUtil
             }
             catch
             {
-                
+
             }
         }
 
@@ -366,14 +376,16 @@ namespace NetworkUtil
         /// <returns>True if the send process was started, false if an error occurs or the socket is already closed</returns>
         public static bool SendAndClose(Socket socket, string data)
         {
-            // Don't attempt to send if soscket is closed
+            // Don't attempt to send if socket is closed
             if (!socket.Connected)
             {
                 return false;
             }
 
+            // Convert data
             byte[] dataBuffer = Encoding.UTF8.GetBytes(data);
 
+            // Send data
             try
             {
                 socket.BeginSend(dataBuffer, 0, data.Length, SocketFlags.None, SendAndCloseCallback, socket);
@@ -403,14 +415,14 @@ namespace NetworkUtil
         {
             Socket socket = (Socket)ar.AsyncState;
 
+            // Ensure socket is closed
             try
             {
                 if (socket.Connected)
                 {
                     socket.EndSend(ar);
                     socket.Close();
-                }
-                             
+                }                             
             }
             catch
             {
