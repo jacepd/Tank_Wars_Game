@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
+// Author: Jace Duennebeil u1076804, and Joshua Hardy u1255474
+
 namespace NetworkUtil
 {
 
@@ -135,6 +137,7 @@ namespace NetworkUtil
                 {
                     // TODO: Indicate an error to the user, as specified in the documentation
                     SetErrorFlag(new SocketState(toCall, null), "Didn't find and IPV4 addresses");
+                    return;
                 }
             }
             catch (Exception)
@@ -148,6 +151,7 @@ namespace NetworkUtil
                 {
                     // TODO: Indicate an error to the user, as specified in the documentation
                     SetErrorFlag(new SocketState(toCall, null), "Host name is not valid IP address");
+                    return;
                 }
             }
 
@@ -164,15 +168,18 @@ namespace NetworkUtil
 
             try
             {
-                socket.BeginConnect(ipAddress, port, ConnectedCallback, state);
+                IAsyncResult result = socket.BeginConnect(ipAddress, port, ConnectedCallback, state);
+                bool connected = result.AsyncWaitHandle.WaitOne(3000);
+
+                if (!connected)
+                {
+                    socket.Close();
+                }
             }
             catch
             {
                 SetErrorFlag(state, "Could not connect to server");
             }
-
-            // timeout stuff here
-            
         }
 
         /// <summary>
@@ -191,6 +198,12 @@ namespace NetworkUtil
         private static void ConnectedCallback(IAsyncResult ar)
         {
             SocketState state = (SocketState)ar.AsyncState;
+
+            if (!state.TheSocket.Connected)
+            {
+                SetErrorFlag(state, "Socket was closed due to timeout");
+                return;
+            }
 
            try
             {
@@ -335,7 +348,7 @@ namespace NetworkUtil
             }
             catch
             {
-                // ???
+                
             }
         }
 
@@ -392,14 +405,17 @@ namespace NetworkUtil
 
             try
             {
-                socket.EndSend(ar);                   
+                if (socket.Connected)
+                {
+                    socket.EndSend(ar);
+                    socket.Close();
+                }
+                             
             }
             catch
             {
                 socket.Close();
             }
-
-            socket.Close();
         }
 
         /// <summary>
