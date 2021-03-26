@@ -33,7 +33,7 @@ namespace NetworkUtil
             }
             catch
             {
-                SetErrorFlag(new SocketState(toCall, null), "Could not begin connection.");               
+                SetErrorFlag(new SocketState(toCall, null), "Could not begin connection.");
             }
 
             return listener;
@@ -73,7 +73,7 @@ namespace NetworkUtil
                 state.OnNetworkAction(state);
 
                 // Continue the event loop
-                listener.BeginAcceptSocket(AcceptNewClient, toCall);
+                listener.BeginAcceptSocket(AcceptNewClient, args);
             }
             catch
             {
@@ -168,10 +168,11 @@ namespace NetworkUtil
             }
             catch
             {
-                SetErrorFlag(new SocketState(toCall, null), "Could not connect to server");
+                SetErrorFlag(state, "Could not connect to server");
             }
 
             // timeout stuff here
+            
         }
 
         /// <summary>
@@ -199,7 +200,7 @@ namespace NetworkUtil
             }
             catch
             {
-                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Error finalizing connection to server");
+                SetErrorFlag(state, "Error finalizing connection to server");
             }
         }
 
@@ -227,7 +228,7 @@ namespace NetworkUtil
             }
             catch
             {
-                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Issue receiving data");
+                SetErrorFlag(state, "Issue receiving data");
             }
         }
 
@@ -252,19 +253,22 @@ namespace NetworkUtil
         {
             SocketState state = (SocketState)ar.AsyncState;
             int numBytes = 0;
+
             try
             {
                 numBytes = state.TheSocket.EndReceive(ar);               
             }
             catch
             {
-                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Error when trying to receive data");
+                SetErrorFlag(state, "Error when trying to receive data");
+                return;
             }
 
             // Make sure numBytes isn't empty
             if (numBytes == 0)
             {
-                SetErrorFlag(new SocketState(state.OnNetworkAction, null), "Socket was closed while receiving data");
+                SetErrorFlag(state, "Socket was closed while receiving data");
+                return;
             }
 
             // Parse the message
