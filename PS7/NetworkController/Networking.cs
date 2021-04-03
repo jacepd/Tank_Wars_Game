@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-// Author: Jace Duennebeil u1076804, and Joshua Hardy u1255474
+// Author: Daniel Kopta, Jace Duennebeil u1076804, and Joshua Hardy u1255474
 
 namespace NetworkUtil
 {

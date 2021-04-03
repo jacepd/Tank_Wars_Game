@@ -1,8 +1,12 @@
-﻿using System;
+﻿// Edited by Joshua Hardy and Jace Duennebeil, Spring 2021
+// Uses code written by Daniel Kopta
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GameController;
 
 namespace View
 {
@@ -16,7 +20,10 @@ namespace View
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            Controller control = new Controller();
+
+            Application.Run(new Form1(control));
         }
     }
 }

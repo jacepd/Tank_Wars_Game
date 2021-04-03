@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Written by Joshua Hardy and Jace Duennebeil, Spring 2021
+// Uses code written by Daniel Kopta
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
@@ -24,8 +27,8 @@ namespace World
         [JsonProperty(PropertyName = "name")]
         private string name;
 
-        [JsonProperty(PropertyName = "hp")]
-        private int hitPoints = Constants.MaxHP;
+        //[JsonProperty(PropertyName = "hp")]
+        //private int hitPoints = Constants.MaxHP;
 
         [JsonProperty(PropertyName = "score")]
         private int score = 0;

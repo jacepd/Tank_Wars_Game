@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Written by Joshua Hardy and Jace Duennebeil, Spring 2021
+// Uses code written by Daniel Kopta
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
@@ -7,7 +10,7 @@ using TankWars;
 namespace World
 {
     [JsonObject(MemberSerialization.OptIn)]
-    class Wall
+    public class Wall
     {
         [JsonProperty(PropertyName = "wall")]
         private int ID;
