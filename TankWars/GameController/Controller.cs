@@ -5,6 +5,7 @@ using System;
 using System.Text.RegularExpressions;
 using NetworkUtil;
 using World;
+using Newtonsoft.Json;
 
 namespace GameController
 {
@@ -145,7 +146,7 @@ namespace GameController
             {
                 // Parse wall
                 // Create wall object
-                // Store wall in container? (world class?)
+                // Add wall to world using addWall() method
             }
             // Loop finished: all walls are in wall container
 
@@ -164,7 +165,61 @@ namespace GameController
                 // Show Error Message?
             }
 
-            // Parse some stuff here
+            string data = state.GetData();
+            string[] newItems = Regex.Split(data, @"(?<=[\n])");
+
+            int lastItemLength = 0;
+
+            /*/////////////////////Add data to World////////////////////////////*/
+            lock (world)
+            {
+                foreach (string item in newItems)
+                {
+                    // Skip empty strings (idk if we really need this here)
+                    if (item.Length == 0)
+                        continue;
+                    // Last message is incomplete, stop parsing
+                    if (item[item.Length - 1] != '\n')
+                    {
+                        lastItemLength = item.Length;
+                        break;
+                    }
+                        
+                    Object obj = JsonConvert.DeserializeObject(item);
+
+                    string type = ""; // TODO: Find a way to figure this out
+
+                    switch (type)
+                    {
+                        case "tank":
+                            if (false /*dead*/)
+                            {
+                                // world.RemoveTank()obj
+                            }
+                            else
+                            {
+                                world.addTank((Tank)obj);
+                            }
+                            break;
+                        case "powerup":
+                            world.addPowerup((Powerup)obj);
+                            break;
+
+                            // TODO: etc. for all types
+
+                    }
+
+                }                
+            }
+            /*///////////////////////Data has been added to World/////////////////////////*/
+
+            // Remove updte data from message buffer
+            state.RemoveData(0, data.Length - lastItemLength);
+
+            // TODO: Notify View to draw new data (using event?)
+
+            // Continue the event loop
+            Networking.GetData(state);
         }
     }
 }
