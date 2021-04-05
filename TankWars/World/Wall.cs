@@ -13,7 +13,7 @@ namespace World
     public class Wall
     {
         [JsonProperty(PropertyName = "wall")]
-        private int ID;
+        private int ID;        
 
         [JsonProperty(PropertyName = "p1")]
         private Vector2D firstEndpoint;
@@ -24,6 +24,11 @@ namespace World
         public Wall()
         {
 
+        }
+
+        public int getID()
+        {
+            return ID;
         }
     }
 }

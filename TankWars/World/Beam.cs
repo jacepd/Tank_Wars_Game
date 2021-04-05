@@ -28,5 +28,10 @@ namespace World
         {
 
         }
+
+        public int getID()
+        {
+            return ID;
+        }
     }
 }

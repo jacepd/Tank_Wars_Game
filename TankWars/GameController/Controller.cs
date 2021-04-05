@@ -15,6 +15,9 @@ namespace GameController
         private int worldSize;      // The height and width of the world
         private WorldBox world;     // The world containing all drawable objects in the game
 
+        public delegate void ServerUpdateHandler();
+        public event ServerUpdateHandler UpdateArrived;
+
         /// <summary>
         /// Creates a new Controller to run the game
         /// </summary>
