@@ -4,10 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TankWars;
 
-namespace World
+namespace TankWars
 {
-    public class WorldBox
+    public class World
     {
         private int size; // The length and width of the game screen
 
@@ -22,7 +23,7 @@ namespace World
         /// Creates a new world to store drawable objects
         /// </summary>
         /// <param name="size"></param>
-        public WorldBox(int size)
+        public World(int size)
         {
             this.size = size;
         }

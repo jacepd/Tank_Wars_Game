@@ -4,20 +4,20 @@
 using System;
 using System.Text.RegularExpressions;
 using NetworkUtil;
-using World;
+using TankWars;
 using Newtonsoft.Json;
 
-namespace GameController
+namespace TankWars
 {
     public class Controller
     {
         private string playerName;  // The name of the player in the game
         private int playerID;       // The unique ID of the player in the game
         private int worldSize;      // The height and width of the world
-        private WorldBox world;     // The world containing all drawable objects in the game
+        private World world;     // The world containing all drawable objects in the game
 
         public delegate void ServerUpdateHandler();
-        public event ServerUpdateHandler UpdateArrived;
+        public event ServerUpdateHandler UpdateArrived; // event to be called after new data has been received
 
         /// <summary>
         /// Creates a new Controller to run the game
@@ -114,7 +114,7 @@ namespace GameController
                 // Parse world size and create new World
                 worldSize = Int32.Parse(parts[0].Substring(0, parts[0].Length - 1));
 
-                world = new WorldBox(worldSize);
+                world = new World(worldSize);
 
                 // Remove the ID from the message data
                 state.RemoveData(0, parts[0].Length);
@@ -213,10 +213,11 @@ namespace GameController
             }
             /*///////////////////////Data has been added to World/////////////////////////*/
 
-            // Remove updte data from message buffer
+            // Remove update data from message buffer
             state.RemoveData(0, data.Length - lastItemLength);
 
             // TODO: Notify View to draw new data (using event?)
+            UpdateArrived();
 
             // Continue the event loop
             Networking.GetData(state);

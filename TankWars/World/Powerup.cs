@@ -7,7 +7,7 @@ using System.Text;
 using Newtonsoft.Json;
 using TankWars;
 
-namespace World
+namespace TankWars
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class Powerup
