@@ -177,7 +177,7 @@ namespace TankWars
                     }
 
                     // Add the wall to the world
-                    parseMessageData(item);
+                    ParseMessageData(item);
 
                     // Remove update data from message buffer
                     state.RemoveData(0, item.Length);
@@ -222,7 +222,8 @@ namespace TankWars
                         break;
                     }
 
-                    parseMessageData(item);
+                    // Add item to world
+                    ParseMessageData(item);
                 }                
             }
             /*///////////////////////Data has been added to World/////////////////////////*/
@@ -230,7 +231,7 @@ namespace TankWars
             // Remove update data from message buffer
             state.RemoveData(0, data.Length - lastItemLength);
 
-            // TODO: Notify View to draw new data (using event?)
+            // Notify View to draw new data
             UpdateArrived();
 
             // Continue the event loop
@@ -242,7 +243,7 @@ namespace TankWars
         /// update the World.
         /// </summary>
         /// <param name="json"></param>
-        private void parseMessageData (string json)
+        private void ParseMessageData (string json)
         {
             if (json.Contains("wall"))
             {
