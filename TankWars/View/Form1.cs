@@ -17,10 +17,18 @@ namespace View
     public partial class Form1 : Form
     {
         private Controller control;
+        private World world;
+        private DrawingPanel drawingPanel;
+
+        private const int viewSize = 500;
+        private const int menuSize = 40;
 
         public Form1(Controller ctrl)
         {
             InitializeComponent();
+            control = ctrl;
+            world = ctrl.getWorld();
+            ctrl.UpdateArrived += OnFrame;
 
             ServerNameTextbox.Text = "localhost";
 
@@ -30,7 +38,23 @@ namespace View
             ServerNameTextbox.Focus();
             ServerNameTextbox.SelectAll();
 
-            control = ctrl;
+            // Place and add the drawing panel
+            drawingPanel = new DrawingPanel(world);
+            drawingPanel.Location = new Point(0, menuSize);
+            drawingPanel.Size = new Size(viewSize, viewSize);
+            this.Controls.Add(drawingPanel);
+        }
+
+        /// <summary>
+        /// Handler for the controller's UpdateArrived event
+        /// </summary>
+        private void OnFrame()
+        {
+            // Invalidate this form and all its children
+            // This will cause the form to redraw as soon as it can
+
+            MethodInvoker invoker = new MethodInvoker(() => this.Invalidate(true));
+            this.Invoke(invoker);
         }
 
         private void ServerConnectButton_Click(object sender, EventArgs e)

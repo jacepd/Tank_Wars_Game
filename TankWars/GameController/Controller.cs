@@ -13,7 +13,7 @@ namespace TankWars
     {
         private string playerName;  // The name of the player in the game
         private int playerID;       // The unique ID of the player in the game
-        private int worldSize;      // The height and width of the world
+        private int worldSize = 500;      // The height and width of the world
         private World world;     // The world containing all drawable objects in the game
 
         public delegate void ServerUpdateHandler();
@@ -25,7 +25,16 @@ namespace TankWars
         public Controller()
         {
             playerID = -1;
-            world = null;
+            world = new World(500);
+        }
+
+        /// <summary>
+        /// Returns the world owned by this controller
+        /// </summary>
+        /// <returns></returns>
+        public World getWorld()
+        {
+            return world;
         }
 
         /// <summary>
@@ -152,10 +161,13 @@ namespace TankWars
 
             // Draw all abjects that need to be drawn
             // (AKA. all objects in wall container + all objects in other containers?)
+            UpdateArrived();
 
             /* Change GetData's OnNetworkAction to its final 'RecieveUpdate' method that
              * is capable of parsing and drawing any JSON objects that are sent to it
              */
+            state.OnNetworkAction = ReceiveUpdate;
+            Networking.GetData(state);
         }
 
         private void ReceiveUpdate(SocketState state)

@@ -26,6 +26,21 @@ namespace TankWars
         public World(int size)
         {
             this.size = size;
+            Walls = new Dictionary<int, Wall>();
+            Tanks = new Dictionary<int, Tank>();
+            Projectiles = new Dictionary<int, Projectile>();
+            Beams = new Dictionary<int, Beam>();
+            Powerups = new Dictionary<int, Powerup>();
+        }
+
+        public IEnumerable<Tank> getTanks()
+        {
+            return Tanks.Values;
+        }
+
+        public IEnumerable<Wall> getWalls()
+        {
+            return Walls.Values;
         }
 
         /// <summary>

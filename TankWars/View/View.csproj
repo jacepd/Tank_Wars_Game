@@ -87,6 +87,14 @@
       <Project>{2957207a-f56d-4342-bd2b-598753c3dc0c}</Project>
       <Name>GameController</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Vector2D\Vector2D.csproj">
+      <Project>{7fe061fd-9aaf-4a7d-9c45-27008363576a}</Project>
+      <Name>Vector2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\World\World.csproj">
+      <Project>{b1a73a74-6c3b-4a56-9b18-615d8bf3bd6e}</Project>
+      <Name>World</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
