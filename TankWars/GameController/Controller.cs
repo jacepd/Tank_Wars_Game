@@ -151,25 +151,50 @@ namespace TankWars
                 // Show Error Message?
             }
 
-            while (false) // While next JSON object is a wall
-            {
-                // Parse wall
-                // Create wall object
-                // Add wall to world using addWall() method
-            }
-            // Loop finished: all walls are in wall container
+            string data = state.GetData();
+            string[] parts = Regex.Split(data, @"(?<=[\n])");
 
-            // Draw all abjects that need to be drawn
-            // (AKA. all objects in wall container + all objects in other containers?)
+            lock (world)
+            {
+                foreach (string item in parts)
+                {
+                    // Skip empty strings (idk if we really need this here)
+                    if (item.Length == 0)
+                        continue;
+                    // Last message is incomplete, stop parsing
+                    if (item[item.Length - 1] != '\n')
+                    {
+                        break;
+                    }
+
+                    // The last of the walls have been added
+                    if (!item.Contains("wall"))
+                    {                        
+                        // Change GetData's OnNetworkAction to its final 'RecieveUpdate' method that
+                        // is capable of parsing and drawing any JSON objects that are sent to it
+                        state.OnNetworkAction = ReceiveUpdate;                      
+                        break;
+                    }
+
+                    // Add the wall to the world
+                    parseMessageData(item);
+
+                    // Remove update data from message buffer
+                    state.RemoveData(0, item.Length);
+                }                
+            }
+
+            // Draw walls
             UpdateArrived();
 
-            /* Change GetData's OnNetworkAction to its final 'RecieveUpdate' method that
-             * is capable of parsing and drawing any JSON objects that are sent to it
-             */
-            state.OnNetworkAction = ReceiveUpdate;
+            // Continue event loop
             Networking.GetData(state);
         }
 
+        /// <summary>
+        /// Receives data from server and uses it to update the world
+        /// </summary>
+        /// <param name="state"></param>
         private void ReceiveUpdate(SocketState state)
         {
             if (state.ErrorOccurred)
@@ -196,31 +221,8 @@ namespace TankWars
                         lastItemLength = item.Length;
                         break;
                     }
-                        
-                    Object obj = JsonConvert.DeserializeObject(item);
 
-                    string type = ""; // TODO: Find a way to figure this out
-
-                    switch (type)
-                    {
-                        case "tank":
-                            if (false /*dead*/)
-                            {
-                                // world.RemoveTank()obj
-                            }
-                            else
-                            {
-                                world.addTank((Tank)obj);
-                            }
-                            break;
-                        case "powerup":
-                            world.addPowerup((Powerup)obj);
-                            break;
-
-                            // TODO: etc. for all types
-
-                    }
-
+                    parseMessageData(item);
                 }                
             }
             /*///////////////////////Data has been added to World/////////////////////////*/
@@ -233,6 +235,65 @@ namespace TankWars
 
             // Continue the event loop
             Networking.GetData(state);
+        }
+
+        /// <summary>
+        /// Creates the corresponding object from the given Json string and uses it to
+        /// update the World.
+        /// </summary>
+        /// <param name="json"></param>
+        private void parseMessageData (string json)
+        {
+            if (json.Contains("wall"))
+            {
+                Wall newWall = JsonConvert.DeserializeObject<Wall>(json);
+                world.addWall(newWall);
+            }
+            else if (json.Contains("tank"))
+            {
+                Tank newTank = JsonConvert.DeserializeObject<Tank>(json);
+                if (newTank.getDied())
+                {
+                    world.removeTank(newTank);
+                }
+                else
+                {
+                    world.addTank(newTank);
+                }
+            }
+            else if (json.Contains("proj"))
+            {
+                Projectile newProj = JsonConvert.DeserializeObject<Projectile>(json);
+                if (newProj.getDied())
+                {
+                    world.removeProjectile(newProj);
+                }
+                else
+                {
+                    world.addProjectile(newProj);
+                }
+            }
+            else if (json.Contains("power"))
+            {
+                Powerup newPower = JsonConvert.DeserializeObject<Powerup>(json);
+                if (newPower.getDied())
+                {
+                    world.removePowerup(newPower);
+                }
+                else
+                {
+                    world.addPowerup(newPower);
+                }
+            }
+            else if (json.Contains("beam"))
+            {
+                Beam newBeam = JsonConvert.DeserializeObject<Beam>(json);
+                world.addBeam(newBeam);
+            }
+            else
+            {
+
+            }
         }
     }
 }

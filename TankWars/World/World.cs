@@ -103,6 +103,34 @@ namespace TankWars
             Powerups.Add(newPowerup.getID(), newPowerup);
         }
 
+        /// <summary>
+        /// Removes the given tank from the world
+        /// </summary>
+        /// <param name="tank"></param>
+        public void removeTank(Tank tank)
+        {
+            Tanks.Remove(tank.getID());
+        }
+
+        /// <summary>
+        /// Removes the given projectile from the world
+        /// </summary>
+        /// <param name="projectile"></param>
+        public void removeProjectile(Projectile projectile)
+        {
+            Projectiles.Remove(projectile.getID());
+        }
+
+        /// <summary>
+        /// Removes the given powerup from the world
+        /// </summary>
+        /// <param name="tank"></param>
+        public void removePowerup(Powerup powerup)
+        {
+            Powerups.Remove(powerup.getID());
+        }
+
+
         /* TODO:
          * - Add 'RemoveTank', 'RemovePowerup', etc. methods
          *   to remove items with a 'dead' property from dictionary

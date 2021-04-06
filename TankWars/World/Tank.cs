@@ -61,5 +61,10 @@ namespace TankWars
         {
             return orientation;
         }
+
+        public bool getDied()
+        {
+            return died;
+        }
     }
 }

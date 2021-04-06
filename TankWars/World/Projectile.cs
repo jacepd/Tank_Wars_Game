@@ -46,5 +46,10 @@ namespace TankWars
         {
             return direction;
         }
+
+        public bool getDied()
+        {
+            return died;
+        }
     }
 }
