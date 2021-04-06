@@ -31,9 +31,14 @@ namespace TankWars
             return ID;
         }
 
-        public Vector2D getLocation()
+        public Vector2D getFirstEndpoint()
         {
             return firstEndpoint;
+        }
+
+        public Vector2D getSecondEndpoint()
+        {
+            return secondEndpoint;
         }
     }
 }

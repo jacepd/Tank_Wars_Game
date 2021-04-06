@@ -43,6 +43,21 @@ namespace TankWars
             return Walls.Values;
         }
 
+        public IEnumerable<Projectile> getProjectiles()
+        {
+            return Projectiles.Values;
+        }
+
+        public IEnumerable<Powerup> getPowerups()
+        {
+            return Powerups.Values;
+        }
+
+        public IEnumerable<Beam> getWBeams()
+        {
+            return Beams.Values;
+        }
+
         /// <summary>
         /// Adds a new wall to the world
         /// </summary>

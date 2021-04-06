@@ -36,5 +36,15 @@ namespace TankWars
         {
             return ID;
         }
+
+        public Vector2D getLocation()
+        {
+            return location;
+        }
+
+        public Vector2D getDirection()
+        {
+            return direction;
+        }
     }
 }
