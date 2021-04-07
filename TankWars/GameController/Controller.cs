@@ -6,15 +6,23 @@ using System.Text.RegularExpressions;
 using NetworkUtil;
 using TankWars;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace TankWars
 {
     public class Controller
     {
+        private SocketState state;
+
         private string playerName;  // The name of the player in the game
         private int playerID;       // The unique ID of the player in the game
         private int worldSize = 500;      // The height and width of the world
         private World world;     // The world containing all drawable objects in the game
+
+        private string moveDirection;
+        private string turretFire;
+        private Vector2D turretDirection;
 
         public delegate void ServerUpdateHandler();
         public event ServerUpdateHandler UpdateArrived; // event to be called after new data has been received
@@ -58,6 +66,7 @@ namespace TankWars
             {
                 // Show Error Message?
             }
+
             Networking.Send(state.TheSocket, playerName + "\n");
 
             state.OnNetworkAction = ReceivePlayerID;
@@ -91,15 +100,9 @@ namespace TankWars
 
                 // Parse World size
                 state.OnNetworkAction = ReceiveWorldSize;
-                Networking.GetData(state);
-            }
-            else
-            {
-                // First message incomplete, request more data
-                Networking.GetData(state);
             }
 
-            
+            Networking.GetData(state);
         }
 
         /// <summary>
@@ -130,13 +133,9 @@ namespace TankWars
 
                 // Parse Walls
                 state.OnNetworkAction = ReceiveWalls;
-                Networking.GetData(state);
             }
-            else
-            {
-                // First message incomplete, request more data
-                Networking.GetData(state);
-            }
+
+            Networking.GetData(state);
         }
 
         /// <summary>
@@ -167,16 +166,15 @@ namespace TankWars
                         break;
                     }
 
-                    // The last of the walls have been added
+                    // Add the wall to the world
                     if (!item.Contains("wall"))
-                    {                        
+                    {
                         // Change GetData's OnNetworkAction to its final 'RecieveUpdate' method that
                         // is capable of parsing and drawing any JSON objects that are sent to it
-                        state.OnNetworkAction = ReceiveUpdate;                      
+                        state.OnNetworkAction = ReceiveUpdate;
                         break;
                     }
 
-                    // Add the wall to the world
                     ParseMessageData(item);
 
                     // Remove update data from message buffer
@@ -222,7 +220,6 @@ namespace TankWars
                         break;
                     }
 
-                    // Add item to world
                     ParseMessageData(item);
                 }                
             }
@@ -230,6 +227,9 @@ namespace TankWars
 
             // Remove update data from message buffer
             state.RemoveData(0, data.Length - lastItemLength);
+
+            // Send commands to server
+            ProcessInputs(state);
 
             // Notify View to draw new data
             UpdateArrived();
@@ -245,6 +245,8 @@ namespace TankWars
         /// <param name="json"></param>
         private void ParseMessageData (string json)
         {
+            // JObject object = JObject.Parse(json);
+
             if (json.Contains("wall"))
             {
                 Wall newWall = JsonConvert.DeserializeObject<Wall>(json);
@@ -291,10 +293,37 @@ namespace TankWars
                 Beam newBeam = JsonConvert.DeserializeObject<Beam>(json);
                 world.addBeam(newBeam);
             }
-            else
-            {
+        }
 
-            }
+        /// <summary>
+        /// Checks which inputs are currently held down
+        /// Normally this would send a message to the server
+        /// </summary>
+        private void ProcessInputs(SocketState state)
+        {
+            ControlCommand command = new ControlCommand();
+            command.setMoveDirection(moveDirection);
+            command.setFire(turretFire);
+            command.setTurretAimDirection(turretDirection);
+
+            string json = JsonConvert.SerializeObject(command);
+
+            Networking.Send(state.TheSocket, json);
+        }
+
+        public void HandleMoveRequest(string direction)
+        {
+            moveDirection = direction;
+        }
+
+        public void HandleFireRequest(string fire)
+        {
+            turretFire = fire;
+        }
+
+        public void HandleTurretDirection(Vector2D turretDir)
+        {
+            turretDirection = turretDir;
         }
     }
 }

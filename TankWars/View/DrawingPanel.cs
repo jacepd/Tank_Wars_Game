@@ -107,53 +107,37 @@ namespace View
             Rectangle tankRectangle = new Rectangle(-(tankWidth / 2), -(tankHeight / 2), tankWidth, tankHeight);
             Rectangle turretRectangle = new Rectangle(-(turretWidth / 2), -(turretHeight / 2), turretWidth, turretHeight);
 
+            int num = t.getID() % 8;
+
             // Since there are 8 different colors to choose from was getting remainder of the ID to choose the color for tank
-            // May be a better way to do this
-            if (t.getID() % 8 == 0)
+            switch (num)
             {
-                // Use a color of tank and turret
-            }
-            else if (t.getID() % 8 == 1)
-            {
-                // use different color of tank and turret
-            }
-            else if (t.getID() % 8 == 2)
-            {
-                // use different color of tank and turret
-            }
-            else if (t.getID() % 8 == 3)
-            {
-                // use different color of tank and turret
-            }
-            else if (t.getID() % 8 == 4)
-            {
-                // use different color of tank and turret
-            }
-            else if (t.getID() % 8 == 5)
-            {
-                // use different color of tank and turret
-            }
-            else if (t.getID() % 8 == 6)
-            {
-                // use different color of tank and turret
-            }
-            else if (t.getID() % 8 == 7)
-            {
-                // use different color of tank and turret
+                case 0:
+                    // Use a color of tank and turret
+                    break;
+                case 1:
+                    // Use different color of tank and turret
+                    break;
+                case 2:
+                    // Use different color of tank and turret
+                    break;
+                case 3:
+                    // Use different color of tank and turret
+                    break;
+                case 4:
+                    // Use different color of tank and turret
+                    break;
+                case 5:
+                    // Use different color of tank and turret
+                    break;
+                case 6:
+                    // Use different color of tank and turret
+                    break;
+                case 7:
+                    // Use different color of tank and turret
+                    break;
             }
 
-
-
-
-            //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            //using (System.Drawing.SolidBrush blueBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Blue))
-            //using (System.Drawing.SolidBrush greenBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Green))
-            //{
-            //    if (t.getID() == 1) // team 1 is blue
-            //        e.Graphics.FillRectangle(blueBrush, r);
-            //    else                  // team 2 is green
-            //        e.Graphics.FillRectangle(greenBrush, r);
-            //}
         }
 
         private void WallDrawer(object o, PaintEventArgs e)
@@ -170,14 +154,6 @@ namespace View
 
 
             // Draw Image
-
-
-
-            //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            //using (System.Drawing.SolidBrush grayBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray))
-            //{
-            //    e.Graphics.FillRectangle(grayBrush, r);
-            //}
         }
 
         private void ProjectileDrawer(object o, PaintEventArgs e)

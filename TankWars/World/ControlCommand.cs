@@ -19,11 +19,27 @@ namespace TankWars
         string fire;
 
         [JsonProperty(PropertyName = "tdir")]
-        string turretAimDirection;
+        Vector2D turretAimDirection;
 
         public ControlCommand()
         {
 
+        }
+
+        public void setMoveDirection(string dir)
+        {
+            moveDirection = dir;
+        }
+
+        public void setFire(string fir)
+        {
+            fire = fir;
+        }
+
+        public void setTurretAimDirection(Vector2D dir)
+        {
+            turretAimDirection = dir;
+            turretAimDirection.Normalize();
         }
     }
 }

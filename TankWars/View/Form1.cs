@@ -43,6 +43,12 @@ namespace View
             drawingPanel.Location = new Point(0, menuSize);
             drawingPanel.Size = new Size(viewSize, viewSize);
             this.Controls.Add(drawingPanel);
+
+            this.KeyDown += HandleKeyDown;
+            this.KeyUp += HandleKeyUp;
+            drawingPanel.MouseDown += HandleMouseDown;
+            drawingPanel.MouseUp += HandleMouseUp;
+            drawingPanel.MouseMove += HandleMouseMove;
         }
 
         /// <summary>
@@ -63,6 +69,90 @@ namespace View
             ServerNameTextbox.Enabled = false;
             PlayerNameTextbox.Enabled = false;
             control.ConnectToServer(ServerNameTextbox.Text, PlayerNameTextbox.Text);
+        }
+
+        private void HandleKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.W)
+            {
+                control.HandleMoveRequest("up");
+            }
+            else if(e.KeyCode == Keys.A)
+            {
+                control.HandleMoveRequest("left");
+            }
+            else if (e.KeyCode == Keys.S)
+            {
+                control.HandleMoveRequest("down");
+            }
+            else if (e.KeyCode == Keys.D)
+            {
+                control.HandleMoveRequest("right");
+            }
+
+            // Prevent other key handlers from running
+            e.SuppressKeyPress = true;
+            e.Handled = true;
+        }
+
+        private void HandleKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.W)
+            {
+                control.HandleMoveRequest("up");
+            }
+            else if (e.KeyCode == Keys.A)
+            {
+                control.HandleMoveRequest("left");
+            }
+            else if (e.KeyCode == Keys.S)
+            {
+                control.HandleMoveRequest("down");
+            }
+            else if (e.KeyCode == Keys.D)
+            {
+                control.HandleMoveRequest("right");
+            }
+
+            // Prevent other key handlers from running
+            e.SuppressKeyPress = true;
+            e.Handled = true;
+        }
+
+        private void HandleMouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                control.HandleFireRequest("main");
+            }
+            else if(e.Button == MouseButtons.Right)
+            {
+                control.HandleFireRequest("alt");
+            }
+        }
+
+        private void HandleMouseUp(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                control.HandleFireRequest("main");
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                control.HandleFireRequest("alt");
+            }
+        }
+
+        private void HandleMouseMove(object sender, MouseEventArgs e)
+        {
+            int centerX = drawingPanel.Location.X + viewSize / 2;
+            int centerY = drawingPanel.Location.Y + viewSize / 2;
+
+            int xLength = MousePosition.X - centerX;
+            int yLength = MousePosition.Y - centerY;
+
+            Vector2D vector = new Vector2D(xLength, yLength);
+            control.HandleTurretDirection(vector);
         }
     }
 }
