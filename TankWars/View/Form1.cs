@@ -30,13 +30,15 @@ namespace View
             world = ctrl.getWorld();
             ctrl.UpdateArrived += OnFrame;
 
+            // Set the window size
+            ClientSize = new Size(viewSize, viewSize + menuSize);
+
             ServerNameTextbox.Text = "localhost";
-
-            PlayerNameTextbox.MaxLength = 16;
-            PlayerNameTextbox.Text = "playername";
-
             ServerNameTextbox.Focus();
             ServerNameTextbox.SelectAll();
+
+            PlayerNameTextbox.MaxLength = 16;
+            PlayerNameTextbox.Text = "playername";                   
 
             // Place and add the drawing panel
             drawingPanel = new DrawingPanel(world);
@@ -68,6 +70,7 @@ namespace View
             ServerConnectButton.Enabled = false;
             ServerNameTextbox.Enabled = false;
             PlayerNameTextbox.Enabled = false;
+            KeyPreview = true;
             control.ConnectToServer(ServerNameTextbox.Text, PlayerNameTextbox.Text);
         }
 
@@ -97,26 +100,10 @@ namespace View
 
         private void HandleKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.W)
+            if (e.KeyCode == Keys.W || e.KeyCode == Keys.A || e.KeyCode == Keys.S || e.KeyCode == Keys.D)
             {
-                control.HandleMoveRequest("up");
-            }
-            else if (e.KeyCode == Keys.A)
-            {
-                control.HandleMoveRequest("left");
-            }
-            else if (e.KeyCode == Keys.S)
-            {
-                control.HandleMoveRequest("down");
-            }
-            else if (e.KeyCode == Keys.D)
-            {
-                control.HandleMoveRequest("right");
-            }
-
-            // Prevent other key handlers from running
-            e.SuppressKeyPress = true;
-            e.Handled = true;
+                control.HandleMoveRequest("none");
+            }          
         }
 
         private void HandleMouseDown(object sender, MouseEventArgs e)
@@ -133,13 +120,9 @@ namespace View
 
         private void HandleMouseUp(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if(e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
-                control.HandleFireRequest("main");
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                control.HandleFireRequest("alt");
+                control.HandleFireRequest("none");
             }
         }
 
