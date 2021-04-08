@@ -12,10 +12,74 @@ namespace View
     public class DrawingPanel : Panel
     {
         private World theWorld;
+
+        // Wall image
+        private Image wallImage;
+
+        // Tank and turret images
+        private Image blueTank;
+        private Image blueTurret;
+        private Image darkTank;
+        private Image darkTurret;
+        private Image greenTank;
+        private Image greenTurret;
+        private Image lightGreenTank;
+        private Image lightGreenTurret;
+        private Image orangeTank;
+        private Image orangeTurret;
+        private Image purpleTank;
+        private Image purpleTurret;
+        private Image redTank;
+        private Image redTurret;
+        private Image yellowTank;
+        private Image yellowTurret;
+
+        // Projectile images
+        private Image blueProjectile;
+        private Image darkProjectile;
+        private Image greenProjectile;
+        private Image lightGreenProjectile;
+        private Image orangeProjectile;
+        private Image purpleProjectile;
+        private Image redProjectile;
+        private Image yellowProjectile;
+
         public DrawingPanel(World w)
         {
             DoubleBuffered = true;
             theWorld = w;
+
+            // Initialize the images
+            // Wall image
+            wallImage = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/WallSprite.png");
+
+            // Tank and turret images
+            blueTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/BlueTank.png");
+            blueTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/BlueTurret.png");
+            darkTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/DarkTank.png");
+            darkTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/DarkTurret.png");
+            greenTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/GreenTank.png");
+            greenTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/GreenTurret.png");
+            lightGreenTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/LightGreenTank.png");
+            lightGreenTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/LightGreenTurret.png");
+            orangeTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/OrangeTank.png");
+            orangeTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/OrangeTurret.png");
+            purpleTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/PurpleTank.png");
+            purpleTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/PurpleTurret.png");
+            redTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/RedTank.png");
+            redTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/RedTurret.png");
+            yellowTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/YellowTank.png");
+            yellowTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/YellowTurret.png");
+
+            // Projectile images
+            blueProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-blue.png");
+            darkProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-grey.png");
+            greenProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-green.png");
+            lightGreenProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-green.png");
+            orangeProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-brown.png");
+            purpleProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-violet.png");
+            redProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-red.png");
+            yellowProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-yellow.png");
         }
 
         // A delegate for DrawObjectWithTransform
@@ -55,8 +119,7 @@ namespace View
             lock (theWorld)
             {
                 // Draw the background
-                //Image background = Image.FromFile("../Resources/Images/Background.png");
-                //e.Graphics.DrawImage(background, new Point(0, 0));
+                
 
                 // Draw the walls
                 foreach (Wall wall in theWorld.getWalls())
@@ -113,28 +176,36 @@ namespace View
             switch (num)
             {
                 case 0:
-                    // Use a color of tank and turret
+                    e.Graphics.DrawImage(blueTank, tankRectangle);
+                    e.Graphics.DrawImage(blueTurret, turretRectangle);
                     break;
                 case 1:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(darkTank, tankRectangle);
+                    e.Graphics.DrawImage(darkTurret, turretRectangle);
                     break;
                 case 2:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(greenTank, tankRectangle);
+                    e.Graphics.DrawImage(greenTurret, turretRectangle);
                     break;
                 case 3:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(lightGreenTank, tankRectangle);
+                    e.Graphics.DrawImage(lightGreenTurret, turretRectangle);
                     break;
                 case 4:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(orangeTank, tankRectangle);
+                    e.Graphics.DrawImage(orangeTurret, turretRectangle);
                     break;
                 case 5:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(purpleTank, tankRectangle);
+                    e.Graphics.DrawImage(purpleTurret, turretRectangle);
                     break;
                 case 6:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(redTank, tankRectangle);
+                    e.Graphics.DrawImage(redTurret, turretRectangle);
                     break;
                 case 7:
-                    // Use different color of tank and turret
+                    e.Graphics.DrawImage(yellowTank, tankRectangle);
+                    e.Graphics.DrawImage(yellowTurret, turretRectangle);
                     break;
             }
 
@@ -152,8 +223,7 @@ namespace View
             // by half its size to the left (-width/2) and up (-height/2)
             Rectangle r = new Rectangle(-(width / 2), -(height / 2), width, height);
 
-
-            // Draw Image
+            e.Graphics.DrawImage(wallImage, r);
         }
 
         private void ProjectileDrawer(object o, PaintEventArgs e)
@@ -168,22 +238,58 @@ namespace View
             // by half its size to the left (-width/2) and up (-height/2)
             Rectangle r = new Rectangle(-(width / 2), -(height / 2), width, height);
 
+            int num = p.getID() % 8;
 
-            // Draw Image
+            // Since there are 8 different colors to choose from was getting remainder of the ID to choose the color for tank
+            switch (num)
+            {
+                case 0:
+                    e.Graphics.DrawImage(blueProjectile, r);
+                    break;
+                case 1:
+                    e.Graphics.DrawImage(darkProjectile, r);
+                    break;
+                case 2:
+                    e.Graphics.DrawImage(greenProjectile, r);
+                    break;
+                case 3:
+                    e.Graphics.DrawImage(lightGreenProjectile, r);
+                    break;
+                case 4:
+                    e.Graphics.DrawImage(orangeProjectile, r);
+                    break;
+                case 5:
+                    e.Graphics.DrawImage(purpleProjectile, r);
+                    break;
+                case 6:
+                    e.Graphics.DrawImage(redProjectile, r);
+                    break;
+                case 7:
+                    e.Graphics.DrawImage(yellowProjectile, r);
+                    break;
+            }
         }
 
         private void PowerupDrawer(object o, PaintEventArgs e)
         {
             Powerup p = o as Powerup;
 
-            // Draw Image
+            using (Pen redBrush = new Pen(Color.Red))
+            {
+                Rectangle r = new Rectangle(5, 5, 10, 10);
+
+                e.Graphics.DrawEllipse(redBrush, r);
+            }
         }
 
         private void BeamDrawer(object o, PaintEventArgs e)
         {
             Beam b = o as Beam;
 
-            // Draw Image
+            using(Pen whiteBrush = new Pen(Color.White, 20f))
+            {
+                e.Graphics.DrawLine(whiteBrush, new Point(0, 0), new Point(0, -2000));
+            }
         }
     }
 }
