@@ -51,5 +51,10 @@ namespace TankWars
         {
             return died;
         }
+
+        public int getOwnerID()
+        {
+            return ownerID;
+        }
     }
 }

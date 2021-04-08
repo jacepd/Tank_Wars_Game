@@ -13,6 +13,9 @@ namespace View
     {
         private World theWorld;
 
+        // Background image
+        private Image backgroundImage;
+
         // Wall image
         private Image wallImage;
 
@@ -49,9 +52,10 @@ namespace View
             DoubleBuffered = true;
             theWorld = w;
 
-
-
             // Initialize the images
+            // Bakcground image
+            backgroundImage = Image.FromFile("..\\..\\..\\Resources\\Images\\Background.png");
+
             // Wall image
             wallImage = Image.FromFile("..\\..\\..\\Resources\\Images\\WallSprite.png");
 
@@ -113,55 +117,97 @@ namespace View
         // This method is invoked when the DrawingPanel needs to be re-drawn
         protected override void OnPaint(PaintEventArgs e)
         {
-            // Center the view on the middle of the world,
-            // since the image and world use different coordinate systems
-            int viewSize = Size.Width; // view is square, so we can just use width
-            e.Graphics.TranslateTransform(viewSize / 2, viewSize / 2);
-
             lock (theWorld)
             {
                 // Draw the background
-                DrawObjectWithTransform(e, null, 0, 0, 0, TerribleBackgroundDrawer);
-
-                // Draw the walls
-                foreach (Wall wall in theWorld.getWalls())
+                if (theWorld.containsTank())
                 {
-                    DrawObjectWithTransform(e, wall, wall.getFirstEndpoint().GetX(), wall.getFirstEndpoint().GetY(), 0, WallDrawer);
-                }
+                    // Center the view on the player's tank
+                    int viewSize = Size.Width;
+                    double playerX = theWorld.getPlayerTank().getLocation().GetX();
+                    double playerY = theWorld.getPlayerTank().getLocation().GetY();
+                    e.Graphics.TranslateTransform((float)-playerX + (viewSize / 2), (float)-playerY + (viewSize / 2));
 
-                // Draw the tanks
-                foreach (Tank tank in theWorld.getTanks())
-                {
-                    DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getOrientation().ToAngle(), TankDrawer);
-                }
+                    DrawObjectWithTransform(e, null, 0, 0, 0, BackgroundDrawer);
 
-                // Draw the projectiles
-                foreach (Projectile projectile in theWorld.getProjectiles())
-                {
-                    DrawObjectWithTransform(e, projectile, projectile.getLocation().GetX(), projectile.getLocation().GetY(), projectile.getDirection().ToAngle(), ProjectileDrawer);
-                }
+                    // Draw the walls
+                    foreach (Wall wall in theWorld.getWalls())
+                    {
+                        double firstX = wall.getFirstEndpoint().GetX();
+                        double secondX = wall.getSecondEndpoint().GetX();
+                        double firstY = wall.getFirstEndpoint().GetY();
+                        double secondY = wall.getSecondEndpoint().GetY();
 
-                // Draw the powerups
-                foreach (Powerup powerup in theWorld.getPowerups())
-                {
-                    DrawObjectWithTransform(e, powerup, powerup.getLocation().GetX(), powerup.getLocation().GetY(), 0, PowerupDrawer);
-                }
+                        if (firstX - secondX < 0.0001 && firstX - secondX > -0.0001)
+                        {
+                            if (firstY < secondY)
+                            {
+                                for (double i = firstY; i <= secondY; i += 50)
+                                {
+                                    DrawObjectWithTransform(e, wall, firstX, i, 0, WallDrawer);
+                                }
+                            }
+                            else
+                            {
+                                for (double i = firstY; i >= secondY; i -= 50)
+                                {
+                                    DrawObjectWithTransform(e, wall, firstX, i, 0, WallDrawer);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (firstX < secondX)
+                            {
+                                for (double i = firstX; i <= secondX; i += 50)
+                                {
+                                    DrawObjectWithTransform(e, wall, i, firstY, 0, WallDrawer);
+                                }
+                            }
+                            else
+                            {
+                                for (double i = firstX; i >= secondX; i -= 50)
+                                {
+                                    DrawObjectWithTransform(e, wall, i, firstY, 0, WallDrawer);
+                                }
+                            }
+                        }
+                    }
 
-                // Draw the beams
-                foreach (Beam beam in theWorld.getWBeams())
-                {
-                    DrawObjectWithTransform(e, beam, beam.getOrigin().GetX(), beam.getOrigin().GetY(), beam.getDirection().ToAngle(), BeamDrawer);
-                }
+                    // Draw the powerups
+                    foreach (Powerup powerup in theWorld.getPowerups())
+                    {
+                        DrawObjectWithTransform(e, powerup, powerup.getLocation().GetX(), powerup.getLocation().GetY(), 0, PowerupDrawer);
+                    }
 
+                    // Draw the tanks
+                    foreach (Tank tank in theWorld.getTanks())
+                    {
+                        DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getOrientation().ToAngle(), TankDrawer);
+                        DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getTurretDirection().ToAngle(), TurretDrawer);
+                    }
+
+                    // Draw the projectiles
+                    foreach (Projectile projectile in theWorld.getProjectiles())
+                    {
+                        DrawObjectWithTransform(e, projectile, projectile.getLocation().GetX(), projectile.getLocation().GetY(), projectile.getDirection().ToAngle(), ProjectileDrawer);
+                    }
+
+                    // Draw the beams
+                    foreach (Beam beam in theWorld.getWBeams())
+                    {
+                        DrawObjectWithTransform(e, beam, beam.getOrigin().GetX(), beam.getOrigin().GetY(), beam.getDirection().ToAngle(), BeamDrawer);
+                    }
+                }
             }
         }
 
-        private void TerribleBackgroundDrawer(object o, PaintEventArgs e)
+        private void BackgroundDrawer(object o, PaintEventArgs e)
         {
-            int viewSize = Size.Width;
-            Rectangle background = new Rectangle(-(viewSize/2), -(viewSize/2), viewSize, viewSize);
-            SolidBrush backgroundBrush = new SolidBrush(Color.Black);
-            e.Graphics.FillRectangle(backgroundBrush, background);
+            int worldSize = theWorld.getWorldSize();
+            Rectangle background = new Rectangle(-(worldSize / 2), -(worldSize / 2), worldSize, worldSize);
+
+            e.Graphics.DrawImage(backgroundImage, background);
         }
 
         private void TankDrawer(object o, PaintEventArgs e)
@@ -171,14 +217,10 @@ namespace View
             int tankWidth = 60;
             int tankHeight = 60;
 
-            int turretWidth = 50;
-            int turretHeight = 50;
-
             // Rectangles are drawn starting from the top-left corner.
             // So if we want the rectangle centered on the player's location, we have to offset it
             // by half its size to the left (-width/2) and up (-height/2)
             Rectangle tankRectangle = new Rectangle(-(tankWidth / 2), -(tankHeight / 2), tankWidth, tankHeight);
-            Rectangle turretRectangle = new Rectangle(-(turretWidth / 2), -(turretHeight / 2), turretWidth, turretHeight);
 
             int num = t.getID() % 8;
 
@@ -187,38 +229,71 @@ namespace View
             {
                 case 0:
                     e.Graphics.DrawImage(blueTank, tankRectangle);
-                    e.Graphics.DrawImage(blueTurret, turretRectangle);
                     break;
                 case 1:
                     e.Graphics.DrawImage(darkTank, tankRectangle);
-                    e.Graphics.DrawImage(darkTurret, turretRectangle);
                     break;
                 case 2:
                     e.Graphics.DrawImage(greenTank, tankRectangle);
-                    e.Graphics.DrawImage(greenTurret, turretRectangle);
                     break;
                 case 3:
                     e.Graphics.DrawImage(lightGreenTank, tankRectangle);
-                    e.Graphics.DrawImage(lightGreenTurret, turretRectangle);
                     break;
                 case 4:
                     e.Graphics.DrawImage(orangeTank, tankRectangle);
-                    e.Graphics.DrawImage(orangeTurret, turretRectangle);
                     break;
                 case 5:
                     e.Graphics.DrawImage(purpleTank, tankRectangle);
-                    e.Graphics.DrawImage(purpleTurret, turretRectangle);
                     break;
                 case 6:
                     e.Graphics.DrawImage(redTank, tankRectangle);
-                    e.Graphics.DrawImage(redTurret, turretRectangle);
                     break;
                 case 7:
                     e.Graphics.DrawImage(yellowTank, tankRectangle);
-                    e.Graphics.DrawImage(yellowTurret, turretRectangle);
                     break;
             }
 
+        }
+
+        private void TurretDrawer(object o, PaintEventArgs e)
+        {
+            Tank t = o as Tank;
+
+            int turretWidth = 50;
+            int turretHeight = 50;
+
+            Rectangle turretRectangle = new Rectangle(-(turretWidth / 2), -(turretHeight / 2), turretWidth, turretHeight);
+
+            int num = t.getID() % 8;
+
+            // Since there are 8 different colors to choose from was getting remainder of the ID to choose the color for tank
+            switch (num)
+            {
+                case 0:
+                    e.Graphics.DrawImage(blueTurret, turretRectangle);
+                    break;
+                case 1:
+                    e.Graphics.DrawImage(darkTurret, turretRectangle);
+                    break;
+                case 2:
+                    e.Graphics.DrawImage(greenTurret, turretRectangle);
+                    break;
+                case 3:
+                    e.Graphics.DrawImage(lightGreenTurret, turretRectangle);
+                    break;
+                case 4:
+                    e.Graphics.DrawImage(orangeTurret, turretRectangle);
+                    break;
+                case 5:
+                    e.Graphics.DrawImage(purpleTurret, turretRectangle);
+                    break;
+                case 6:
+                    e.Graphics.DrawImage(redTurret, turretRectangle);
+                    break;
+                case 7:
+                    e.Graphics.DrawImage(yellowTurret, turretRectangle);
+                    break;
+            }
         }
 
         private void WallDrawer(object o, PaintEventArgs e)
@@ -248,7 +323,7 @@ namespace View
             // by half its size to the left (-width/2) and up (-height/2)
             Rectangle r = new Rectangle(-(width / 2), -(height / 2), width, height);
 
-            int num = p.getID() % 8;
+            int num = p.getOwnerID() % 8;
 
             // Since there are 8 different colors to choose from was getting remainder of the ID to choose the color for tank
             switch (num)
@@ -284,11 +359,13 @@ namespace View
         {
             Powerup p = o as Powerup;
 
-            using (Pen redBrush = new Pen(Color.Red))
+            using (Pen redPen = new Pen(Color.Red))
+                using (SolidBrush greenBrush = new SolidBrush(Color.Green))
             {
-                Rectangle r = new Rectangle(5, 5, 10, 10);
-
-                e.Graphics.DrawEllipse(redBrush, r);
+                Rectangle outer = new Rectangle(5, 5, 10, 10);
+                Rectangle inner = new Rectangle(5, 5, 8, 8);
+                e.Graphics.FillEllipse(greenBrush, inner);
+                e.Graphics.DrawEllipse(redPen, outer);
             }
         }
 

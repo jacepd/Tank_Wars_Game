@@ -11,6 +11,7 @@ namespace TankWars
     public class World
     {
         private int size; // The length and width of the game screen
+        private int playerID;
 
         // Items that need to be drawn every frame
         private Dictionary<int, Wall> Walls;
@@ -31,6 +32,26 @@ namespace TankWars
             Projectiles = new Dictionary<int, Projectile>();
             Beams = new Dictionary<int, Beam>();
             Powerups = new Dictionary<int, Powerup>();
+        }
+
+        public void setPlayerID(int id)
+        {
+            playerID = id;
+        }
+
+        public int getWorldSize()
+        {
+            return size;
+        }
+
+        public bool containsTank()
+        {
+            return Tanks.ContainsKey(playerID);
+        }
+
+        public Tank getPlayerTank()
+        {
+            return Tanks[playerID];
         }
 
         public IEnumerable<Tank> getTanks()
@@ -147,11 +168,9 @@ namespace TankWars
         }
 
 
-        /* TODO:
-         * - Add 'RemoveTank', 'RemovePowerup', etc. methods
-         *   to remove items with a 'dead' property from dictionary
-         * - Add 'beam animations' class somewhere maybe ???
-         * - ...
-         */
+        public void setWorldSize(int size)
+        {
+            this.size = size;
+        }
     }
 }

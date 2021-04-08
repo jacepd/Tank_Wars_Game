@@ -20,9 +20,9 @@ namespace TankWars
         private int worldSize = 500;      // The height and width of the world
         private World world;     // The world containing all drawable objects in the game
 
-        private string moveDirection;
-        private string turretFire;
-        private Vector2D turretDirection;
+        private string moveDirection = "none";
+        private string turretFire = "none";
+        private Vector2D turretDirection = new Vector2D(0, 0);
 
         public delegate void ServerUpdateHandler();
         public event ServerUpdateHandler UpdateArrived; // event to be called after new data has been received
@@ -95,6 +95,9 @@ namespace TankWars
                 // Parse and store the player ID
                 playerID = Int32.Parse(parts[0].Substring(0, parts[0].Length - 1));
 
+                // Set playerID in the World
+                world.setPlayerID(playerID);
+
                 // Remove the ID from the message data
                 state.RemoveData(0, parts[0].Length);
 
@@ -126,7 +129,10 @@ namespace TankWars
                 // Parse world size and create new World
                 worldSize = Int32.Parse(parts[0].Substring(0, parts[0].Length - 1));
 
-                world = new World(worldSize);
+                lock (world)
+                {
+                    world.setWorldSize(worldSize);
+                }
 
                 // Remove the ID from the message data
                 state.RemoveData(0, parts[0].Length);

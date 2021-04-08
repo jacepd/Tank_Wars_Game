@@ -27,8 +27,8 @@ namespace TankWars
         [JsonProperty(PropertyName = "name")]
         private string name;
 
-        //[JsonProperty(PropertyName = "hp")]
-        //private int hitPoints = Constants.MaxHP;
+        [JsonProperty(PropertyName = "hp")]
+        private int hitPoints = 3;
 
         [JsonProperty(PropertyName = "score")]
         private int score = 0;
@@ -65,6 +65,11 @@ namespace TankWars
         public bool getDied()
         {
             return died;
+        }
+
+        public Vector2D getTurretDirection()
+        {
+            return aiming;
         }
     }
 }
