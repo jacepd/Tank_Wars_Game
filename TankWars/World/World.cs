@@ -73,6 +73,10 @@ namespace TankWars
         /// <param name="newTank"></param>
         public void addTank(Tank newTank)
         {
+            if (Tanks.ContainsKey(newTank.getID()))
+            {
+                Tanks.Remove(newTank.getID());
+            }
             Tanks.Add(newTank.getID(), newTank);
         }
 
@@ -82,6 +86,10 @@ namespace TankWars
         /// <param name="newProjectile"></param>
         public void addProjectile(Projectile newProjectile)
         {
+            if (Projectiles.ContainsKey(newProjectile.getID()))
+            {
+                Projectiles.Remove(newProjectile.getID());
+            }
             Projectiles.Add(newProjectile.getID(), newProjectile);
         }
 
@@ -91,6 +99,10 @@ namespace TankWars
         /// <param name="newBeam"></param>
         public void addBeam(Beam newBeam)
         {
+            if (Beams.ContainsKey(newBeam.getID()))
+            {
+                Beams.Remove(newBeam.getID());
+            }
             Beams.Add(newBeam.getID(), newBeam);
         }
 
@@ -100,6 +112,10 @@ namespace TankWars
         /// <param name="newPowerup"></param>
         public void addPowerup(Powerup newPowerup)
         {
+            if (Powerups.ContainsKey(newPowerup.getID()))
+            {
+                Powerups.Remove(newPowerup.getID());
+            }
             Powerups.Add(newPowerup.getID(), newPowerup);
         }
 
