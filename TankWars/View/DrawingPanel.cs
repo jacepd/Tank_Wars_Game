@@ -51,35 +51,35 @@ namespace View
 
             // Initialize the images
             // Wall image
-            wallImage = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/WallSprite.png");
+            wallImage = Image.FromFile("../../Resources/Images/WallSprite.png");
 
             // Tank and turret images
-            blueTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/BlueTank.png");
-            blueTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/BlueTurret.png");
-            darkTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/DarkTank.png");
-            darkTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/DarkTurret.png");
-            greenTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/GreenTank.png");
-            greenTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/GreenTurret.png");
-            lightGreenTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/LightGreenTank.png");
-            lightGreenTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/LightGreenTurret.png");
-            orangeTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/OrangeTank.png");
-            orangeTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/OrangeTurret.png");
-            purpleTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/PurpleTank.png");
-            purpleTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/PurpleTurret.png");
-            redTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/RedTank.png");
-            redTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/RedTurret.png");
-            yellowTank = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/YellowTank.png");
-            yellowTurret = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/YellowTurret.png");
+            blueTank = Image.FromFile("../../Resources/Images/BlueTank.png");
+            blueTurret = Image.FromFile("../../Resources/Images/BlueTurret.png");
+            darkTank = Image.FromFile("../../Resources/Images/DarkTank.png");
+            darkTurret = Image.FromFile("../../Resources/Images/DarkTurret.png");
+            greenTank = Image.FromFile("../../Resources/Images/GreenTank.png");
+            greenTurret = Image.FromFile("../../Resources/Images/GreenTurret.png");
+            lightGreenTank = Image.FromFile("../../Resources/Images/LightGreenTank.png");
+            lightGreenTurret = Image.FromFile("../../Resources/Images/LightGreenTurret.png");
+            orangeTank = Image.FromFile("../../Resources/Images/OrangeTank.png");
+            orangeTurret = Image.FromFile("../../Resources/Images/OrangeTurret.png");
+            purpleTank = Image.FromFile("../../Resources/Images/PurpleTank.png");
+            purpleTurret = Image.FromFile("../../Resources/Images/PurpleTurret.png");
+            redTank = Image.FromFile("../../Resources/Images/RedTank.png");
+            redTurret = Image.FromFile("../../Resources/Images/RedTurret.png");
+            yellowTank = Image.FromFile("../../Resources/Images/YellowTank.png");
+            yellowTurret = Image.FromFile("../../Resources/Images/YellowTurret.png");
 
             // Projectile images
-            blueProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-blue.png");
-            darkProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-grey.png");
-            greenProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-green.png");
-            lightGreenProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-green.png");
-            orangeProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-brown.png");
-            purpleProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-violet.png");
-            redProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-red.png");
-            yellowProjectile = Image.FromFile("C:/Users/duenn/Source/Repos/game-eldia/TankWars/Resources/Images/shot-yellow.png");
+            blueProjectile = Image.FromFile("../../Resources/Images/shot-blue.png");
+            darkProjectile = Image.FromFile("../../Resources/Images/shot-grey.png");
+            greenProjectile = Image.FromFile("../../Resources/Images/shot-green.png");
+            lightGreenProjectile = Image.FromFile("../../Resources/Images/shot-green.png");
+            orangeProjectile = Image.FromFile("../../Resources/Images/shot-brown.png");
+            purpleProjectile = Image.FromFile("../../Resources/Images/shot-violet.png");
+            redProjectile = Image.FromFile("../../Resources/Images/shot-red.png");
+            yellowProjectile = Image.FromFile("../../Resources/Images/shot-yellow.png");
         }
 
         // A delegate for DrawObjectWithTransform
