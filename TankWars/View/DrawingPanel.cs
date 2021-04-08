@@ -49,9 +49,11 @@ namespace View
             DoubleBuffered = true;
             theWorld = w;
 
+
+
             // Initialize the images
             // Wall image
-            //wallImage = Image.FromFile("../../Resources/Images/WallSprite.png");
+            //wallImage = Image.FromFile();
 
             //// Tank and turret images
             //blueTank = Image.FromFile("../../Resources/Images/BlueTank.png");
@@ -119,7 +121,7 @@ namespace View
             lock (theWorld)
             {
                 // Draw the background
-                
+                DrawObjectWithTransform(e, null, 0, 0, 0, TerribleBackgroundDrawer);
 
                 // Draw the walls
                 foreach (Wall wall in theWorld.getWalls())
@@ -152,6 +154,14 @@ namespace View
                 }
 
             }
+        }
+
+        private void TerribleBackgroundDrawer(object o, PaintEventArgs e)
+        {
+            int viewSize = Size.Width;
+            Rectangle background = new Rectangle(-(viewSize/2), -(viewSize/2), viewSize, viewSize);
+            System.Drawing.SolidBrush backgroundBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Beige);
+            e.Graphics.FillRectangle(backgroundBrush, background);
         }
 
         private void TankDrawer(object o, PaintEventArgs e)
