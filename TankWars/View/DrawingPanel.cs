@@ -53,35 +53,35 @@ namespace View
 
             // Initialize the images
             // Wall image
-            //wallImage = Image.FromFile();
+            wallImage = Image.FromFile("..\\..\\..\\Resources\\Images\\WallSprite.png");
 
-            //// Tank and turret images
-            //blueTank = Image.FromFile("../../Resources/Images/BlueTank.png");
-            //blueTurret = Image.FromFile("../../Resources/Images/BlueTurret.png");
-            //darkTank = Image.FromFile("../../Resources/Images/DarkTank.png");
-            //darkTurret = Image.FromFile("../../Resources/Images/DarkTurret.png");
-            //greenTank = Image.FromFile("../../Resources/Images/GreenTank.png");
-            //greenTurret = Image.FromFile("../../Resources/Images/GreenTurret.png");
-            //lightGreenTank = Image.FromFile("../../Resources/Images/LightGreenTank.png");
-            //lightGreenTurret = Image.FromFile("../../Resources/Images/LightGreenTurret.png");
-            //orangeTank = Image.FromFile("../../Resources/Images/OrangeTank.png");
-            //orangeTurret = Image.FromFile("../../Resources/Images/OrangeTurret.png");
-            //purpleTank = Image.FromFile("../../Resources/Images/PurpleTank.png");
-            //purpleTurret = Image.FromFile("../../Resources/Images/PurpleTurret.png");
-            //redTank = Image.FromFile("../../Resources/Images/RedTank.png");
-            //redTurret = Image.FromFile("../../Resources/Images/RedTurret.png");
-            //yellowTank = Image.FromFile("../../Resources/Images/YellowTank.png");
-            //yellowTurret = Image.FromFile("../../Resources/Images/YellowTurret.png");
+            // Tank and turret images
+            blueTank = Image.FromFile("..\\..\\..\\Resources\\Images\\BlueTank.png");
+            blueTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\BlueTurret.png");
+            darkTank = Image.FromFile("..\\..\\..\\Resources\\Images\\DarkTank.png");
+            darkTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\DarkTurret.png");
+            greenTank = Image.FromFile("..\\..\\..\\Resources\\Images\\GreenTank.png");
+            greenTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\GreenTurret.png");
+            lightGreenTank = Image.FromFile("..\\..\\..\\Resources\\Images\\LightGreenTank.png");
+            lightGreenTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\LightGreenTurret.png");
+            orangeTank = Image.FromFile("..\\..\\..\\Resources\\Images\\OrangeTank.png");
+            orangeTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\OrangeTurret.png");
+            purpleTank = Image.FromFile("..\\..\\..\\Resources\\Images\\PurpleTank.png");
+            purpleTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\PurpleTurret.png");
+            redTank = Image.FromFile("..\\..\\..\\Resources\\Images\\RedTank.png");
+            redTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\RedTurret.png");
+            yellowTank = Image.FromFile("..\\..\\..\\Resources\\Images\\YellowTank.png");
+            yellowTurret = Image.FromFile("..\\..\\..\\Resources\\Images\\YellowTurret.png");
 
-            //// Projectile images
-            //blueProjectile = Image.FromFile("../../Resources/Images/shot-blue.png");
-            //darkProjectile = Image.FromFile("../../Resources/Images/shot-grey.png");
-            //greenProjectile = Image.FromFile("../../Resources/Images/shot-green.png");
-            //lightGreenProjectile = Image.FromFile("../../Resources/Images/shot-green.png");
-            //orangeProjectile = Image.FromFile("../../Resources/Images/shot-brown.png");
-            //purpleProjectile = Image.FromFile("../../Resources/Images/shot-violet.png");
-            //redProjectile = Image.FromFile("../../Resources/Images/shot-red.png");
-            //yellowProjectile = Image.FromFile("../../Resources/Images/shot-yellow.png");
+            // Projectile images
+            blueProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-blue.png");
+            darkProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-grey.png");
+            greenProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-green.png");
+            lightGreenProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-green.png");
+            orangeProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-brown.png");
+            purpleProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-violet.png");
+            redProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-red.png");
+            yellowProjectile = Image.FromFile("..\\..\\..\\Resources\\Images\\shot-yellow.png");
         }
 
         // A delegate for DrawObjectWithTransform
@@ -160,7 +160,7 @@ namespace View
         {
             int viewSize = Size.Width;
             Rectangle background = new Rectangle(-(viewSize/2), -(viewSize/2), viewSize, viewSize);
-            System.Drawing.SolidBrush backgroundBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Beige);
+            SolidBrush backgroundBrush = new SolidBrush(Color.Black);
             e.Graphics.FillRectangle(backgroundBrush, background);
         }
 
