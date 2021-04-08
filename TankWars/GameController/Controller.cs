@@ -308,7 +308,7 @@ namespace TankWars
 
             string json = JsonConvert.SerializeObject(command);
 
-            Networking.Send(state.TheSocket, json);
+            Networking.Send(state.TheSocket, json + "\n");
         }
 
         public void HandleMoveRequest(string direction)

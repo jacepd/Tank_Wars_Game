@@ -128,8 +128,10 @@ namespace View
 
         private void HandleMouseMove(object sender, MouseEventArgs e)
         {
-            int centerX = drawingPanel.Location.X + viewSize / 2;
-            int centerY = drawingPanel.Location.Y + viewSize / 2;
+            int windowX = this.Location.X;
+            int windowY = this.Location.Y;
+            int centerX = windowX + drawingPanel.Location.X + (viewSize / 2);
+            int centerY = windowY + drawingPanel.Location.Y + (viewSize / 2);
 
             int xLength = MousePosition.X - centerX;
             int yLength = MousePosition.Y - centerY;
