@@ -272,14 +272,14 @@ namespace View
         {
             Tank t = o as Tank;
 
-            Font nameFont = new Font("Arial", 16);
+            Font nameFont = new Font("Arial", 12);
             SolidBrush nameBrush = new SolidBrush(Color.Black);
             StringFormat format = new StringFormat();
             format.Alignment = StringAlignment.Center;
 
             e.Graphics.DrawString(t.getName() + ": " + t.getScore(), nameFont, nameBrush, 0, 30, format);
 
-            e.Graphics.DrawString("Health: " + t.getHealth(), nameFont, nameBrush, 0, -60, format);
+            e.Graphics.DrawString("Health: " + t.getHealth(), nameFont, nameBrush, 0, -50, format);
         }
 
         private void TurretDrawer(object o, PaintEventArgs e)
