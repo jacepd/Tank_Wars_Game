@@ -17,7 +17,6 @@ namespace TankWars
         private Dictionary<int, Wall> Walls;
         private Dictionary<int, Tank> Tanks;
         private Dictionary<int, Projectile> Projectiles;
-        private Dictionary<int, Beam> Beams;
         private Dictionary<int, Powerup> Powerups;
 
         /// <summary>
@@ -30,7 +29,6 @@ namespace TankWars
             Walls = new Dictionary<int, Wall>();
             Tanks = new Dictionary<int, Tank>();
             Projectiles = new Dictionary<int, Projectile>();
-            Beams = new Dictionary<int, Beam>();
             Powerups = new Dictionary<int, Powerup>();
         }
 
@@ -74,11 +72,6 @@ namespace TankWars
             return Powerups.Values;
         }
 
-        public IEnumerable<Beam> getWBeams()
-        {
-            return Beams.Values;
-        }
-
         /// <summary>
         /// Adds a new wall to the world
         /// </summary>
@@ -112,19 +105,6 @@ namespace TankWars
                 Projectiles.Remove(newProjectile.getID());
             }
             Projectiles.Add(newProjectile.getID(), newProjectile);
-        }
-
-        /// <summary>
-        /// Adds a new beam to the world
-        /// </summary>
-        /// <param name="newBeam"></param>
-        public void addBeam(Beam newBeam)
-        {
-            if (Beams.ContainsKey(newBeam.getID()))
-            {
-                Beams.Remove(newBeam.getID());
-            }
-            Beams.Add(newBeam.getID(), newBeam);
         }
 
         /// <summary>

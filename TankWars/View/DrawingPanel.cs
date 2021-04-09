@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Created by Joshua Hardy and Jace Duennebeil, Spring 2021
+// Uses code written by Daniel Kopta
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,6 +49,9 @@ namespace View
         private Image purpleProjectile;
         private Image redProjectile;
         private Image yellowProjectile;
+
+        private HashSet<BeamAnimation> beamAnimations = new HashSet<BeamAnimation>();
+        private List<BeamAnimation> animsToRemove = new List<BeamAnimation>();
 
         public DrawingPanel(World w)
         {
@@ -194,10 +200,15 @@ namespace View
                     }
 
                     // Draw the beams
-                    foreach (Beam beam in theWorld.getWBeams())
+                    foreach (BeamAnimation anim in beamAnimations)
                     {
-                        DrawObjectWithTransform(e, beam, beam.getOrigin().GetX(), beam.getOrigin().GetY(), beam.getDirection().ToAngle(), BeamDrawer);
+                        DrawObjectWithTransform(e, anim, anim.getOrigin().GetX(), anim.getOrigin().GetY(), anim.getDirection().ToAngle(), anim.BeamDrawer);
+                        if (anim.getFrameNumber() > 60)
+                        {
+                            animsToRemove.Add(anim);
+                        }
                     }
+                    RemoveBeamAnimations();
                 }
             }
         }
@@ -369,14 +380,19 @@ namespace View
             }
         }
 
-        private void BeamDrawer(object o, PaintEventArgs e)
+        public void AddBeamAnimation(Beam beam)
         {
-            Beam b = o as Beam;
+            BeamAnimation anim = new BeamAnimation(beam.getOrigin(), beam.getDirection());
+            this.Invoke(new MethodInvoker(() => beamAnimations.Add(anim)));
+        }
 
-            using(Pen whiteBrush = new Pen(Color.White, 20f))
+        public void RemoveBeamAnimations()
+        {
+            foreach (BeamAnimation anim in animsToRemove)
             {
-                e.Graphics.DrawLine(whiteBrush, new Point(0, 0), new Point(0, -2000));
+                beamAnimations.Remove(anim);
             }
         }
+       
     }
 }

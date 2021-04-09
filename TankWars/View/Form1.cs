@@ -53,6 +53,7 @@ namespace View
             drawingPanel.MouseMove += HandleMouseMove;
 
             drawingPanel.BackColor = Color.Black;
+            ctrl.BeamFiredEvent += drawingPanel.AddBeamAnimation;
         }
 
         /// <summary>

@@ -27,6 +27,9 @@ namespace TankWars
         public delegate void ServerUpdateHandler();
         public event ServerUpdateHandler UpdateArrived; // event to be called after new data has been received
 
+        public delegate void BeamFiredHandler(Beam beam);
+        public event BeamFiredHandler BeamFiredEvent;
+
         /// <summary>
         /// Creates a new Controller to run the game
         /// </summary>
@@ -297,7 +300,7 @@ namespace TankWars
             else if (json.Contains("beam"))
             {
                 Beam newBeam = JsonConvert.DeserializeObject<Beam>(json);
-                world.addBeam(newBeam);
+                BeamFiredEvent(newBeam);
             }
         }
 
