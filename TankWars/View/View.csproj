@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeamAnimation.cs" />
+    <Compile Include="DeathAnimation.cs" />
     <Compile Include="DrawingPanel.cs">
       <SubType>Component</SubType>
     </Compile>

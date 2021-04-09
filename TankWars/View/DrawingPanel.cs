@@ -51,7 +51,10 @@ namespace View
         private Image yellowProjectile;
 
         private HashSet<BeamAnimation> beamAnimations = new HashSet<BeamAnimation>();
-        private List<BeamAnimation> animsToRemove = new List<BeamAnimation>();
+        private List<BeamAnimation> beamsToRemove = new List<BeamAnimation>();
+
+        private HashSet<DeathAnimation> deathAnimations = new HashSet<DeathAnimation>();
+        private List<DeathAnimation> deathToRemove = new List<DeathAnimation>();
 
         public DrawingPanel(World w)
         {
@@ -206,10 +209,20 @@ namespace View
                         DrawObjectWithTransform(e, anim, anim.getOrigin().GetX(), anim.getOrigin().GetY(), anim.getDirection().ToAngle(), anim.BeamDrawer);
                         if (anim.getFrameNumber() > 60)
                         {
-                            animsToRemove.Add(anim);
+                            beamsToRemove.Add(anim);
                         }
                     }
                     RemoveBeamAnimations();
+
+                    foreach (DeathAnimation anim in deathAnimations)
+                    {
+                        DrawObjectWithTransform(e, anim, anim.getOrigin().GetX(), anim.getOrigin().GetY(), 0, anim.DeathDrawer);
+                        if (anim.getFrameNumber() > 20)
+                        {
+                            deathToRemove.Add(anim);
+                        }
+                    }
+                    RemoveDeathAnimations();
                 }
             }
         }
@@ -404,11 +417,25 @@ namespace View
 
         public void RemoveBeamAnimations()
         {
-            foreach (BeamAnimation anim in animsToRemove)
+            foreach (BeamAnimation anim in beamsToRemove)
             {
                 beamAnimations.Remove(anim);
             }
         }
-       
+
+        public void AddDeathAnimation(Tank tank)
+        {
+            DeathAnimation anim = new DeathAnimation(tank.getLocation());
+            this.Invoke(new MethodInvoker(() => deathAnimations.Add(anim)));
+        }
+
+        public void RemoveDeathAnimations()
+        {
+            foreach (DeathAnimation anim in deathToRemove)
+            {
+                deathAnimations.Remove(anim);
+            }
+        }
+
     }
 }

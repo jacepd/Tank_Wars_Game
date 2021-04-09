@@ -30,6 +30,9 @@ namespace TankWars
         public delegate void BeamFiredHandler(Beam beam);  
         public event BeamFiredHandler BeamFiredEvent;  // Event to add a beamanimation to draw them
 
+        public delegate void TankDeathHandler(Tank tank);
+        public event TankDeathHandler TankDeathEvent;  // Event to add a deathanimation to draw them
+
         /// <summary>
         /// Creates a new Controller to run the game
         /// </summary>
@@ -267,6 +270,7 @@ namespace TankWars
                 if (newTank.getDied())
                 {
                     world.removeTank(newTank);
+                    TankDeathEvent(newTank);
                 }
                 else
                 {

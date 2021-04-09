@@ -54,6 +54,7 @@ namespace View
 
             drawingPanel.BackColor = Color.Black;
             ctrl.BeamFiredEvent += drawingPanel.AddBeamAnimation;
+            ctrl.TankDeathEvent += drawingPanel.AddDeathAnimation;
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace View
         {
             Beam b = o as Beam;
 
-            float beamSize = 5f * ((60 - frameNumber)/ 60);
+            float beamSize = 5f - (float)(frameNumber / 12.0);
 
             using (Pen whiteBrush = new Pen(Color.White, beamSize))
             {
