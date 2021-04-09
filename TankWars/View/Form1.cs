@@ -103,7 +103,6 @@ namespace View
 
         private void HandleKeyUp(object sender, KeyEventArgs e)
         {
-            
             if (e.KeyCode == Keys.W || e.KeyCode == Keys.A || e.KeyCode == Keys.S || e.KeyCode == Keys.D)
             {
                 control.HandleMoveRequest("none");

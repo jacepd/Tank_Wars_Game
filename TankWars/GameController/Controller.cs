@@ -20,15 +20,15 @@ namespace TankWars
         private int worldSize = 500;      // The height and width of the world
         private World world;     // The world containing all drawable objects in the game
 
-        private string moveDirection = "none";
-        private string turretFire = "none";
-        private Vector2D turretDirection = new Vector2D(0, 0);
+        private string moveDirection = "none";  // Used to send a command for if the tank is moving
+        private string turretFire = "none";   // Used to send a command for if the tank is firing
+        private Vector2D turretDirection = new Vector2D(0, 0);  // Used to send where the tank is aiming
 
         public delegate void ServerUpdateHandler();
         public event ServerUpdateHandler UpdateArrived; // event to be called after new data has been received
 
-        public delegate void BeamFiredHandler(Beam beam);
-        public event BeamFiredHandler BeamFiredEvent;
+        public delegate void BeamFiredHandler(Beam beam);  
+        public event BeamFiredHandler BeamFiredEvent;  // Event to add a beamanimation to draw them
 
         /// <summary>
         /// Creates a new Controller to run the game

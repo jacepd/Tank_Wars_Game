@@ -11,7 +11,7 @@ namespace TankWars
     public class World
     {
         private int size; // The length and width of the game screen
-        private int playerID;
+        private int playerID;  // Stores the playerID for this client
 
         // Items that need to be drawn every frame
         private Dictionary<int, Wall> Walls;
@@ -32,31 +32,55 @@ namespace TankWars
             Powerups = new Dictionary<int, Powerup>();
         }
 
+        /// <summary>
+        /// Setter for this clients playerID
+        /// </summary>
+        /// <param name="id"></param>
         public void setPlayerID(int id)
         {
             playerID = id;
         }
 
+        /// <summary>
+        /// Getter for the world size
+        /// </summary>
+        /// <returns></returns>
         public int getWorldSize()
         {
             return size;
         }
 
+        /// <summary>
+        /// Checks if the world contains this clients tank
+        /// </summary>
+        /// <returns></returns>
         public bool containsTank()
         {
             return Tanks.ContainsKey(playerID);
         }
 
+        /// <summary>
+        /// Getter for this clients tank
+        /// </summary>
+        /// <returns></returns>
         public Tank getPlayerTank()
         {
             return Tanks[playerID];
         }
 
+        /// <summary>
+        /// Getter to return all the tanks in this world
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Tank> getTanks()
         {
             return Tanks.Values;
         }
 
+        /// <summary>
+        /// Getter to return all the walls in this world
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Wall> getWalls()
         {
             return Walls.Values;
@@ -67,6 +91,10 @@ namespace TankWars
             return Projectiles.Values;
         }
 
+        /// <summary>
+        /// Getter to return all the powerups in this world
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Powerup> getPowerups()
         {
             return Powerups.Values;
@@ -147,7 +175,10 @@ namespace TankWars
             Powerups.Remove(powerup.getID());
         }
 
-
+        /// <summary>
+        /// Sets the world size
+        /// </summary>
+        /// <param name="size"></param>
         public void setWorldSize(int size)
         {
             this.size = size;
