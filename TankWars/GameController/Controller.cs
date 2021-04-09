@@ -267,7 +267,7 @@ namespace TankWars
             else if (json.Contains("tank"))
             {
                 Tank newTank = JsonConvert.DeserializeObject<Tank>(json);
-                if (newTank.getDied())
+                if (newTank.getDied() || newTank.getDisconnected())
                 {
                     world.removeTank(newTank);
                     TankDeathEvent(newTank);
