@@ -191,6 +191,7 @@ namespace View
                     {
                         DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getOrientation().ToAngle(), TankDrawer);
                         DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getTurretDirection().ToAngle(), TurretDrawer);
+                        DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), 0, HealthNameDrawer);
                     }
 
                     // Draw the projectiles
@@ -264,6 +265,21 @@ namespace View
                     break;
             }
 
+            
+        }
+
+        private void HealthNameDrawer(object o, PaintEventArgs e)
+        {
+            Tank t = o as Tank;
+
+            Font nameFont = new Font("Arial", 16);
+            SolidBrush nameBrush = new SolidBrush(Color.Black);
+            StringFormat format = new StringFormat();
+            format.Alignment = StringAlignment.Center;
+
+            e.Graphics.DrawString(t.getName() + ": " + t.getScore(), nameFont, nameBrush, 0, 30, format);
+
+            e.Graphics.DrawString("Health: " + t.getHealth(), nameFont, nameBrush, 0, -60, format);
         }
 
         private void TurretDrawer(object o, PaintEventArgs e)

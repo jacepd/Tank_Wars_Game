@@ -71,5 +71,20 @@ namespace TankWars
         {
             return aiming;
         }
+
+        public string getName()
+        {
+            return name;
+        }
+
+        public int getScore()
+        {
+            return score;
+        }
+
+        public int getHealth()
+        {
+            return hitPoints;
+        }
     }
 }
