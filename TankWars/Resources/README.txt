@@ -15,3 +15,6 @@ It contained a reference to the World which it used to determine which objects e
 
 The client communicates wtith the server by sending JSON strings.
 The classes representing all objects that can be sent as JSON are located in the World project.
+
+Everything works how it should except for one slight issue with the movement.  It is not as smooth as we wanted and so
+while you are moving there is a slight hiccup when changing directions at the same time. 
