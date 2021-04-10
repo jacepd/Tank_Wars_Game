@@ -9,6 +9,9 @@ using TankWars;
 
 namespace TankWars
 {
+    /// <summary>
+    /// Represents a tank in the game
+    /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class Tank
     {

@@ -192,9 +192,13 @@ namespace View
                     // Draw the tanks
                     foreach (Tank tank in theWorld.getTanks())
                     {
-                        DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getOrientation().ToAngle(), TankDrawer);
-                        DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getTurretDirection().ToAngle(), TurretDrawer);
-                        DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), 0, HealthNameDrawer);
+                        if(tank.getHealth() > 0)
+                        {
+                            DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getOrientation().ToAngle(), TankDrawer);
+                            DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), tank.getTurretDirection().ToAngle(), TurretDrawer);
+                            DrawObjectWithTransform(e, tank, tank.getLocation().GetX(), tank.getLocation().GetY(), 0, HealthNameDrawer);
+                        }
+                        
                     }
 
                     // Draw the projectiles
@@ -214,6 +218,7 @@ namespace View
                     }
                     RemoveBeamAnimations();
 
+                    // Draw the death animations
                     foreach (DeathAnimation anim in deathAnimations)
                     {
                         DrawObjectWithTransform(e, anim, anim.getOrigin().GetX(), anim.getOrigin().GetY(), 0, anim.DeathDrawer);

@@ -29,14 +29,17 @@ namespace View
             control = ctrl;
             world = ctrl.getWorld();
             ctrl.UpdateArrived += OnFrame;
+            ctrl.ErrorOccurredEvent += ShowErrorMessage;
 
             // Set the window size
             ClientSize = new Size(viewSize, viewSize + menuSize);
 
+            // Sets server textbox defaults
             ServerNameTextbox.Text = "localhost";
             ServerNameTextbox.Focus();
             ServerNameTextbox.SelectAll();
 
+            // Sets name textbox defaults
             PlayerNameTextbox.MaxLength = 16;
             PlayerNameTextbox.Text = "playername";                   
 
@@ -44,15 +47,17 @@ namespace View
             drawingPanel = new DrawingPanel(world);
             drawingPanel.Location = new Point(0, menuSize);
             drawingPanel.Size = new Size(viewSize, viewSize);
+            drawingPanel.BackColor = Color.Black;
             this.Controls.Add(drawingPanel);
-
+            
+            // Registers input handlers to events
             this.KeyDown += HandleKeyDown;
             this.KeyUp += HandleKeyUp;
             drawingPanel.MouseDown += HandleMouseDown;
             drawingPanel.MouseUp += HandleMouseUp;
             drawingPanel.MouseMove += HandleMouseMove;
 
-            drawingPanel.BackColor = Color.Black;
+            // Registers animation handlers to events
             ctrl.BeamFiredEvent += drawingPanel.AddBeamAnimation;
             ctrl.TankDeathEvent += drawingPanel.AddDeathAnimation;
         }
@@ -69,6 +74,11 @@ namespace View
             this.Invoke(invoker);
         }
 
+        /// <summary>
+        /// Connects to the server when the button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ServerConnectButton_Click(object sender, EventArgs e)
         {
             ServerConnectButton.Enabled = false;
@@ -78,6 +88,11 @@ namespace View
             control.ConnectToServer(ServerNameTextbox.Text, PlayerNameTextbox.Text);
         }
 
+        /// <summary>
+        /// Sends a request to move in the appropriate direction when keys are pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandleKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.W)
@@ -102,6 +117,11 @@ namespace View
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Sends a request to stop moving when keys stop being pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandleKeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.W || e.KeyCode == Keys.A || e.KeyCode == Keys.S || e.KeyCode == Keys.D)
@@ -110,6 +130,11 @@ namespace View
             }          
         }
 
+        /// <summary>
+        /// Sends a request to fire when mouse is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandleMouseDown(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left)
@@ -122,6 +147,11 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Sends a request to stop firing when mouse is released
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandleMouseUp(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
@@ -130,6 +160,11 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Sends a request to change turret direction when mouse moves
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandleMouseMove(object sender, MouseEventArgs e)
         {
             int windowX = this.Location.X;
@@ -142,6 +177,15 @@ namespace View
 
             Vector2D vector = new Vector2D(xLength, yLength);
             control.HandleTurretDirection(vector);
+        }
+
+        /// <summary>
+        /// Shows an error message
+        /// </summary>
+        /// <param name="message"></param>
+        private void ShowErrorMessage(String message)
+        {          
+            MessageBox.Show(message);
         }
     }
 }

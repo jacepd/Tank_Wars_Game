@@ -8,6 +8,9 @@ using TankWars;
 
 namespace TankWars
 {
+    /// <summary>
+    /// Represents the Model containing all drawable objects present in the game
+    /// </summary>
     public class World
     {
         private int size; // The length and width of the game screen
@@ -33,24 +36,6 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Setter for this clients playerID
-        /// </summary>
-        /// <param name="id"></param>
-        public void setPlayerID(int id)
-        {
-            playerID = id;
-        }
-
-        /// <summary>
-        /// Getter for the world size
-        /// </summary>
-        /// <returns></returns>
-        public int getWorldSize()
-        {
-            return size;
-        }
-
-        /// <summary>
         /// Checks if the world contains this clients tank
         /// </summary>
         /// <returns></returns>
@@ -60,7 +45,34 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Getter for this clients tank
+        /// Sets the world size
+        /// </summary>
+        /// <param name="size"></param>
+        public void setWorldSize(int size)
+        {
+            this.size = size;
+        }
+
+        /// <summary>
+        /// Sets this clients playerID
+        /// </summary>
+        /// <param name="id"></param>
+        public void setPlayerID(int id)
+        {
+            playerID = id;
+        }
+
+        /// <summary>
+        /// Returns the world size
+        /// </summary>
+        /// <returns></returns>
+        public int getWorldSize()
+        {
+            return size;
+        }
+
+        /// <summary>
+        /// Returns this clients tank
         /// </summary>
         /// <returns></returns>
         public Tank getPlayerTank()
@@ -69,7 +81,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Getter to return all the tanks in this world
+        /// Returns IEnumerable of all the tanks in this world
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Tank> getTanks()
@@ -78,7 +90,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Getter to return all the walls in this world
+        /// Returns IEnumerable of all the walls in this world
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Wall> getWalls()
@@ -86,13 +98,17 @@ namespace TankWars
             return Walls.Values;
         }
 
+        /// <summary>
+        /// Returns IEnumerable of all projectiles in the world
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Projectile> getProjectiles()
         {
             return Projectiles.Values;
         }
 
         /// <summary>
-        /// Getter to return all the powerups in this world
+        /// Returns IEnumerable of all the powerups in this world
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Powerup> getPowerups()
@@ -175,13 +191,5 @@ namespace TankWars
             Powerups.Remove(powerup.getID());
         }
 
-        /// <summary>
-        /// Sets the world size
-        /// </summary>
-        /// <param name="size"></param>
-        public void setWorldSize(int size)
-        {
-            this.size = size;
-        }
     }
 }

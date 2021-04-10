@@ -13,8 +13,6 @@ namespace TankWars
 {
     public class Controller
     {
-        private SocketState state;
-
         private string playerName;  // The name of the player in the game
         private int playerID;       // The unique ID of the player in the game
         private int worldSize = 500;      // The height and width of the world
@@ -28,10 +26,13 @@ namespace TankWars
         public event ServerUpdateHandler UpdateArrived; // event to be called after new data has been received
 
         public delegate void BeamFiredHandler(Beam beam);  
-        public event BeamFiredHandler BeamFiredEvent;  // Event to add a beamanimation to draw them
+        public event BeamFiredHandler BeamFiredEvent;  // Event to add a beam animation to draw them
 
         public delegate void TankDeathHandler(Tank tank);
-        public event TankDeathHandler TankDeathEvent;  // Event to add a deathanimation to draw them
+        public event TankDeathHandler TankDeathEvent;  // Event to add a death animation to draw them
+
+        public delegate void ErrorOccurredHandler(String message);
+        public event ErrorOccurredHandler ErrorOccurredEvent; // Event to be called when error has occured
 
         /// <summary>
         /// Creates a new Controller to run the game
@@ -70,7 +71,7 @@ namespace TankWars
         {
             if(state.ErrorOccurred)
             {
-                // Show Error Message?
+                ErrorOccurredEvent("Error connecting to server.");
             }
 
             Networking.Send(state.TheSocket, playerName + "\n");
@@ -89,7 +90,7 @@ namespace TankWars
         {
             if (state.ErrorOccurred)
             {
-                // Show Error Message?
+                ErrorOccurredEvent("Error receiving player ID from server.");
             }
 
             string firstData = state.GetData();
@@ -123,7 +124,7 @@ namespace TankWars
         {
             if (state.ErrorOccurred)
             {
-                // Show Error Message?
+                ErrorOccurredEvent("Error receiving world size from server.");
             }
 
             string firstData = state.GetData();
@@ -159,7 +160,7 @@ namespace TankWars
         {
             if (state.ErrorOccurred)
             {
-                // Show Error Message?
+                ErrorOccurredEvent("Error receiving walls from server.");
             }
 
             string data = state.GetData();
@@ -209,13 +210,13 @@ namespace TankWars
         {
             if (state.ErrorOccurred)
             {
-                // Show Error Message?
+                ErrorOccurredEvent("Error receiving data from server.");
             }
 
             string data = state.GetData();
             string[] newItems = Regex.Split(data, @"(?<=[\n])");
 
-            int lastItemLength = 0;
+            int lastItemLength = 0; // The length of the last item in the message buffer
 
             /*/////////////////////Add data to World////////////////////////////*/
             lock (world)
@@ -257,13 +258,14 @@ namespace TankWars
         /// <param name="json"></param>
         private void ParseMessageData (string json)
         {
-            // JObject object = JObject.Parse(json);
-
+            // Add a wall to the world
             if (json.Contains("wall"))
             {
                 Wall newWall = JsonConvert.DeserializeObject<Wall>(json);
                 world.addWall(newWall);
             }
+
+            // Add a tank to the world or remove it if it died
             else if (json.Contains("tank"))
             {
                 Tank newTank = JsonConvert.DeserializeObject<Tank>(json);
@@ -277,6 +279,8 @@ namespace TankWars
                     world.addTank(newTank);
                 }
             }
+
+            // Add a projectle to the world or remove it if it died
             else if (json.Contains("proj"))
             {
                 Projectile newProj = JsonConvert.DeserializeObject<Projectile>(json);
@@ -289,6 +293,8 @@ namespace TankWars
                     world.addProjectile(newProj);
                 }
             }
+
+            // Add a powerup to the world or remove it if it died
             else if (json.Contains("power"))
             {
                 Powerup newPower = JsonConvert.DeserializeObject<Powerup>(json);
@@ -301,6 +307,8 @@ namespace TankWars
                     world.addPowerup(newPower);
                 }
             }
+
+            // Add a beam to the world
             else if (json.Contains("beam"))
             {
                 Beam newBeam = JsonConvert.DeserializeObject<Beam>(json);
@@ -324,16 +332,28 @@ namespace TankWars
             Networking.Send(state.TheSocket, json + "\n");
         }
 
+        /// <summary>
+        /// Identifies a request for movement in the given diection
+        /// </summary>
+        /// <param name="direction"></param>
         public void HandleMoveRequest(string direction)
         {
             moveDirection = direction;
         }
 
+        /// <summary>
+        /// Identifies a request to fire the given fire type
+        /// </summary>
+        /// <param name="fire"></param>
         public void HandleFireRequest(string fire)
         {
             turretFire = fire;
         }
 
+        /// <summary>
+        /// Identifies a request to set the turret direction to the given direction
+        /// </summary>
+        /// <param name="turretDir"></param>
         public void HandleTurretDirection(Vector2D turretDir)
         {
             turretDirection = turretDir;
