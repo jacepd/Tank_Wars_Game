@@ -50,12 +50,16 @@ namespace View
         private Image redProjectile;
         private Image yellowProjectile;
 
-        private HashSet<BeamAnimation> beamAnimations = new HashSet<BeamAnimation>();
-        private List<BeamAnimation> beamsToRemove = new List<BeamAnimation>();
+        private HashSet<BeamAnimation> beamAnimations = new HashSet<BeamAnimation>();   // Beam animations to be drawn this frame
+        private List<BeamAnimation> beamsToRemove = new List<BeamAnimation>();          // Beam animations to remove from set
 
-        private HashSet<DeathAnimation> deathAnimations = new HashSet<DeathAnimation>();
-        private List<DeathAnimation> deathToRemove = new List<DeathAnimation>();
+        private HashSet<DeathAnimation> deathAnimations = new HashSet<DeathAnimation>();    // Death animations to be drawn this frame
+        private List<DeathAnimation> deathToRemove = new List<DeathAnimation>();            // Death animations to remove from set
 
+        /// <summary>
+        /// Displays the game and all drawable objects in it
+        /// </summary>
+        /// <param name="w"></param>
         public DrawingPanel(World w)
         {
             DoubleBuffered = true;
@@ -128,7 +132,6 @@ namespace View
         {
             lock (theWorld)
             {
-                // Draw the background
                 if (theWorld.containsTank())
                 {
                     // Center the view on the player's tank
@@ -137,6 +140,7 @@ namespace View
                     double playerY = theWorld.getPlayerTank().getLocation().GetY();
                     e.Graphics.TranslateTransform((float)-playerX + (viewSize / 2), (float)-playerY + (viewSize / 2));
 
+                    // Draw the background
                     DrawObjectWithTransform(e, null, 0, 0, 0, BackgroundDrawer);
 
                     // Draw the walls
@@ -147,6 +151,7 @@ namespace View
                         double firstY = wall.getFirstEndpoint().GetY();
                         double secondY = wall.getSecondEndpoint().GetY();
 
+                        // Draws vertical walls
                         if (firstX - secondX < 0.0001 && firstX - secondX > -0.0001)
                         {
                             if (firstY < secondY)
@@ -164,6 +169,8 @@ namespace View
                                 }
                             }
                         }
+
+                        // Draws horizontal walls
                         else
                         {
                             if (firstX < secondX)
@@ -232,6 +239,11 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Draws the background
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void BackgroundDrawer(object o, PaintEventArgs e)
         {
             int worldSize = theWorld.getWorldSize();
@@ -240,6 +252,11 @@ namespace View
             e.Graphics.DrawImage(backgroundImage, background);
         }
 
+        /// <summary>
+        /// Draws the body of the tank
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void TankDrawer(object o, PaintEventArgs e)
         {
             Tank t = o as Tank;
@@ -286,6 +303,11 @@ namespace View
             
         }
 
+        /// <summary>
+        /// Draws the health and name labels next to the tank
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void HealthNameDrawer(object o, PaintEventArgs e)
         {
             Tank t = o as Tank;
@@ -300,6 +322,11 @@ namespace View
             e.Graphics.DrawString("Health: " + t.getHealth(), nameFont, nameBrush, 0, -50, format);
         }
 
+        /// <summary>
+        /// Draws the turret of the tank
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void TurretDrawer(object o, PaintEventArgs e)
         {
             Tank t = o as Tank;
@@ -341,6 +368,11 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Draws the walls
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void WallDrawer(object o, PaintEventArgs e)
         {
             Wall w = o as Wall;
@@ -356,6 +388,11 @@ namespace View
             e.Graphics.DrawImage(wallImage, r);
         }
 
+        /// <summary>
+        /// Draws the projectiles
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void ProjectileDrawer(object o, PaintEventArgs e)
         {
             Projectile p = o as Projectile;
@@ -400,6 +437,11 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Draws the powerups
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void PowerupDrawer(object o, PaintEventArgs e)
         {
             Powerup p = o as Powerup;
@@ -414,12 +456,19 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Adds a beam animation to the set of animations to be drawn
+        /// </summary>
+        /// <param name="beam"></param>
         public void AddBeamAnimation(Beam beam)
         {
             BeamAnimation anim = new BeamAnimation(beam.getOrigin(), beam.getDirection());
             this.Invoke(new MethodInvoker(() => beamAnimations.Add(anim)));
         }
 
+        /// <summary>
+        /// Removes beam animations from the set of animations to be drawn
+        /// </summary>
         public void RemoveBeamAnimations()
         {
             foreach (BeamAnimation anim in beamsToRemove)
@@ -428,12 +477,19 @@ namespace View
             }
         }
 
+        /// <summary>
+        /// Adds a death animation to the set of animations to be drawn
+        /// </summary>
+        /// <param name="tank"></param>
         public void AddDeathAnimation(Tank tank)
         {
             DeathAnimation anim = new DeathAnimation(tank.getLocation());
             this.Invoke(new MethodInvoker(() => deathAnimations.Add(anim)));
         }
 
+        /// <summary>
+        /// Removes death aniations from the set of animations to be drawn
+        /// </summary>
         public void RemoveDeathAnimations()
         {
             foreach (DeathAnimation anim in deathToRemove)
