@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources", "Resources\Reso
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkController", "..\PS7\NetworkController\NetworkController.csproj", "{F0DED203-87D6-4439-A979-8FE4274DBB80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerController", "ServerController\ServerController.csproj", "{295DEC1E-441B-4515-B610-3FE4B5F690BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{5B63BB9E-797C-4DF4-9E83-64F46DF4414D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{F0DED203-87D6-4439-A979-8FE4274DBB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0DED203-87D6-4439-A979-8FE4274DBB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0DED203-87D6-4439-A979-8FE4274DBB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{295DEC1E-441B-4515-B610-3FE4B5F690BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{295DEC1E-441B-4515-B610-3FE4B5F690BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{295DEC1E-441B-4515-B610-3FE4B5F690BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{295DEC1E-441B-4515-B610-3FE4B5F690BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B63BB9E-797C-4DF4-9E83-64F46DF4414D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B63BB9E-797C-4DF4-9E83-64F46DF4414D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B63BB9E-797C-4DF4-9E83-64F46DF4414D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B63BB9E-797C-4DF4-9E83-64F46DF4414D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
