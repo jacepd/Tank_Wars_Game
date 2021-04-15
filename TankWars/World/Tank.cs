@@ -83,6 +83,12 @@ namespace TankWars
            
         }
 
+        public Tank(int ID, string playerName)
+        {
+            this.ID = ID;
+            name = playerName;
+        }
+
         /// <summary>
         /// Returns the ID
         /// </summary>
