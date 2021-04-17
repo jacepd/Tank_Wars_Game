@@ -235,9 +235,12 @@ namespace TankWars
                 {
                     foreach (ControlCommand input in clientInputs.Keys)
                     {
+                        // Tank movement logic
                         int playerID = clientInputs[input];
                         Tank tank = theWorld.getTank(playerID);
                         tank.updateTank(input);
+
+                        // Projectile logic
                     }
                 }
             }

@@ -34,6 +34,7 @@ namespace TankWars
             Tanks = new Dictionary<int, Tank>();
             Projectiles = new Dictionary<int, Projectile>();
             Powerups = new Dictionary<int, Powerup>();
+            Beams = new Dictionary<int, Beam>();
         }
 
         /// <summary>
