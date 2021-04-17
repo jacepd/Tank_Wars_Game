@@ -9,10 +9,12 @@ namespace TankWars
 {
     public class ServerController
     {
-        private World theWorld;
-        private Dictionary<SocketState, int> clients; // Maps all client connectoins to their playerID
+        private World theWorld;        
         private int worldSize = 500;
-        private int numPlayers;
+        private int numPlayers; // The number of players who have ever connected to this server
+
+        // Maps all client connections to their playerID
+        private Dictionary<SocketState, int> clients; 
 
         // Maps inputs sent by clients to the playerID of the client that sent them
         private Dictionary<ControlCommand, int> clientInputs; 
@@ -57,6 +59,10 @@ namespace TankWars
             ServerStartupEvent("Server is running.  Accepting clients");
         }
 
+        /// <summary>
+        /// Creates new thread to handle client
+        /// </summary>
+        /// <param name="state"></param>
         private void NewClientConnected(SocketState state)
         {
             if (state.ErrorOccurred)
@@ -69,6 +75,10 @@ namespace TankWars
             Networking.GetData(state);
         }
 
+        /// <summary>
+        /// Completes handshake with client bby sending playerID, world size, and walls
+        /// </summary>
+        /// <param name="state"></param>
         private void HandleClient(SocketState state)
         {
             if (state.ErrorOccurred)
@@ -115,6 +125,10 @@ namespace TankWars
             }
         }
 
+        /// <summary>
+        /// Returns the location where a tank should be spawned
+        /// </summary>
+        /// <returns></returns>
         private Vector2D generateRandomLocation()
         {
             throw new NotImplementedException();

@@ -6,6 +6,9 @@ using System.Xml;
 
 namespace Server
 {
+    /// <summary>
+    /// Represents the server running the game
+    /// </summary>
     public class Server
     {
         private static World world;
@@ -83,11 +86,20 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Write that the server is running, to the console
+        /// </summary>
+        /// <param name="message"></param>
         private static void ServerRunning(string message)
         {
             Console.WriteLine(message);
         }
 
+        /// <summary>
+        /// Write that a client has connected, to the console
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="playerName"></param>
         private static void ClientConnected(int playerID, string playerName)
         {
             Console.WriteLine("Accepted new connection.");
