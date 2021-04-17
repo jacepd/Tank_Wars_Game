@@ -31,7 +31,7 @@ namespace TankWars
         /// The orientation of the tank's body
         /// </summary>
         [JsonProperty(PropertyName = "bdir")]
-        private Vector2D orientation;
+        private Vector2D orientation = new Vector2D(0, -1);
 
         /// <summary>
         /// The orientation of the tank's turret
@@ -83,10 +83,16 @@ namespace TankWars
            
         }
 
-        public Tank(int ID, string playerName)
+        /// <summary>
+        /// Creates a Tank with the given ID, playername, and location
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="playerName"></param>
+        public Tank(int ID, string playerName, Vector2D location)
         {
             this.ID = ID;
             name = playerName;
+            this.location = location;          
         }
 
         /// <summary>
@@ -177,6 +183,16 @@ namespace TankWars
         public bool getJoined()
         {
             return joined;
+        }
+
+        /// <summary>
+        /// Updates the tank to match the given input
+        /// </summary>
+        /// <param name="input"></param>
+        public void updateTank(ControlCommand input)
+        {
+            // logic
+            throw new NotImplementedException();
         }
     }
 }

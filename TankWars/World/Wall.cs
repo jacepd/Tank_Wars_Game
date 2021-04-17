@@ -42,6 +42,19 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Creates a wall with the given ID and the given endnpoints
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        public Wall(int ID, Vector2D p1, Vector2D p2)
+        {
+            this.ID = ID;
+            this.firstEndpoint = p1;
+            this.secondEndpoint = p2;
+        }
+
+        /// <summary>
         /// Returns the ID of this wall
         /// </summary>
         /// <returns></returns>

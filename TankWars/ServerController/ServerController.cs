@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using NetworkUtil;
+using Newtonsoft.Json;
 
 namespace TankWars
 {
     public class ServerController
     {
-        World theWorld;
-        Dictionary<int, SocketState> clients;
-        int worldSize = 500;
-        int numPlayers;
+        private World theWorld;
+        private Dictionary<SocketState, int> clients; // Maps all client connectoins to their playerID
+        private int worldSize = 500;
+        private int numPlayers;
+
+        // Maps inputs sent by clients to the playerID of the client that sent them
+        private Dictionary<ControlCommand, int> clientInputs; 
 
         public delegate void ServerStartupHandler(string message);
         public event ServerStartupHandler ServerStartupEvent;
@@ -22,13 +26,30 @@ namespace TankWars
         public delegate void ErrorHandler(string message);
         public event ErrorHandler ErrorEvent;
 
+        /// <summary>
+        /// Creates a new server controller
+        /// </summary>
         public ServerController()
         {
             theWorld = new World(worldSize);
-            clients = new Dictionary<int, SocketState>();
+            clients = new Dictionary<SocketState, int>();
             numPlayers = 0;
+
+            clientInputs = new Dictionary<ControlCommand, int>();
         }
 
+        /// <summary>
+        /// Returns the world
+        /// </summary>
+        /// <returns></returns>
+        public World getWorld()
+        {
+            return theWorld;
+        }
+
+        /// <summary>
+        /// Starts the server
+        /// </summary>
         public void StartServer()
         {
             Networking.StartServer(NewClientConnected, 11000);
@@ -71,9 +92,10 @@ namespace TankWars
 
                     // Save the client state
                     // Need to lock here because clients can disconnect at any time
-                    clients.Add(numPlayers, state);
+                    clients.Add(state, numPlayers);
 
-                    Tank tank = new Tank(numPlayers, playerName);
+                    Vector2D tankLocation = generateRandomLocation();
+                    Tank tank = new Tank(numPlayers, playerName, tankLocation);
                     theWorld.addTank(tank);
 
                     Networking.Send(state.TheSocket, numPlayers + "\n");
@@ -87,17 +109,157 @@ namespace TankWars
                 // Remove the ID from the message data
                 state.RemoveData(0, parts[0].Length);
 
-                // Parse World size
-                // state.OnNetworkAction = ReceiveCommands;
+                // Continue the event loop to recieve input data from clients
+                state.OnNetworkAction = ReceiveCommands;
+                Networking.GetData(state);
             }
         }
 
+        private Vector2D generateRandomLocation()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Receives input data from client
+        /// </summary>
+        /// <param name="state"></param>
+        private void ReceiveCommands(SocketState state)
+        {
+            if (state.ErrorOccurred)
+            {
+                ErrorEvent("Issue receiving data");
+            }
+
+            string inputData = state.GetData();
+            string[] inputs = Regex.Split(inputData, @"(?<=[\n])");
+
+            int lastItemLength = 0; // The length of the last item in the message buffer
+
+            lock(clientInputs)
+            {
+                foreach (string item in inputs)
+                {
+                    // Skip empty strings (idk if we really need this here)
+                    if (item.Length == 0)
+                        continue;
+                    // Last message is incomplete, stop parsing
+                    if (item[item.Length - 1] != '\n')
+                    {
+                        lastItemLength = item.Length;
+                        break;
+                    }
+
+                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
+                    clientInputs.Add(newInput, clients[state]);
+                }
+            }
+
+            // Continue event loop
+            state.RemoveData(0, inputs.Length - lastItemLength);
+            Networking.GetData(state);
+        }
+
+        /// <summary>
+        /// Sends the initial walls to a client
+        /// </summary>
+        /// <param name="state"></param>
         private void SendWalls(SocketState state)
         {
             foreach (Wall wall in theWorld.getWalls())
             {
-                // JSon.Serialize(wall);
+                string json = JsonConvert.SerializeObject(wall);
+
+                Networking.Send(state.TheSocket, json + "\n");
             }
         }
+
+        /// <summary>
+        /// Sends the current state of the world to all clients
+        /// </summary>
+        public void SendWorld()
+        {
+            lock (theWorld)
+            {
+                // Contains beams to be removed after this frame
+                List<Beam> beamsToRemove = new List<Beam>();
+
+                foreach(SocketState client in clients.Keys)
+                {
+                    // Send tanks
+                    foreach(Tank tank in theWorld.getTanks())
+                    {
+                        string json = JsonConvert.SerializeObject(tank);
+                        Networking.Send(client.TheSocket, json + "\n");
+                    }
+
+                    // Send projectiles
+                    foreach(Projectile proj in theWorld.getProjectiles())
+                    {
+                        string json = JsonConvert.SerializeObject(proj);
+                        Networking.Send(client.TheSocket, json + "\n");
+                    }
+
+                    // Send beams
+                    foreach(Beam beam in theWorld.getBeams())
+                    {
+                        string json = JsonConvert.SerializeObject(beam);
+                        Networking.Send(client.TheSocket, json + "\n");
+                        beamsToRemove.Add(beam);
+                    }
+
+                    // Send powerups
+                    foreach(Powerup power in theWorld.getPowerups())
+                    {
+                        string json = JsonConvert.SerializeObject(power);
+                        Networking.Send(client.TheSocket, json + "\n");
+                    }
+                }
+
+                // Remove beams once they've been sent
+                foreach (Beam beam in beamsToRemove)
+                {
+                    theWorld.removeBeam(beam);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the locations of objects in the world
+        /// </summary>
+        public void updateWorld()
+        {
+            lock (theWorld)
+            {
+                lock(clientInputs)
+                {
+                    foreach (ControlCommand input in clientInputs.Keys)
+                    {
+                        int playerID = clientInputs[input];
+                        Tank tank = theWorld.getTank(playerID);
+                        tank.updateTank(input);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks all clients in the clients list to see if one has disconnected
+        /// </summary>
+        public void CheckForDisconnected()
+        {
+            // Locks the world because its using clients
+            lock (theWorld)
+            {
+                foreach(SocketState client in clients.Keys)
+                {
+                    if (client.ErrorOccurred)
+                    {
+                        ErrorEvent("Client " + clients[client] + " disconnected");
+                    }
+                }
+            }
+        }
+        
     }
 }

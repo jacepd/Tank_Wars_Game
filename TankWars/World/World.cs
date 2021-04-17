@@ -21,6 +21,7 @@ namespace TankWars
         private Dictionary<int, Tank> Tanks;
         private Dictionary<int, Projectile> Projectiles;
         private Dictionary<int, Powerup> Powerups;
+        private Dictionary<int, Beam> Beams;
 
         /// <summary>
         /// Creates a new world to store drawable objects
@@ -81,6 +82,16 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Returns the tank with the given playerID
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <returns></returns>
+        public Tank getTank(int playerID)
+        {
+            return Tanks[playerID];
+        }
+
+        /// <summary>
         /// Returns IEnumerable of all the tanks in this world
         /// </summary>
         /// <returns></returns>
@@ -114,6 +125,15 @@ namespace TankWars
         public IEnumerable<Powerup> getPowerups()
         {
             return Powerups.Values;
+        }
+
+        /// <summary>
+        /// Returns IEnumerable of all the beams in this world
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Beam> getBeams()
+        {
+            return Beams.Values;
         }
 
         /// <summary>
@@ -165,6 +185,15 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Adds a new Beam to the world
+        /// </summary>
+        /// <param name="newBeam"></param>
+        public void addBeam(Beam newBeam)
+        {
+            Beams.Add(newBeam.getID(), newBeam);
+        }
+
+        /// <summary>
         /// Removes the given tank from the world
         /// </summary>
         /// <param name="tank"></param>
@@ -189,6 +218,11 @@ namespace TankWars
         public void removePowerup(Powerup powerup)
         {
             Powerups.Remove(powerup.getID());
+        }
+
+        public void removeBeam(Beam beam)
+        {
+
         }
 
     }

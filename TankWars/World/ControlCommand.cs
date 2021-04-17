@@ -44,6 +44,33 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Returns the move direction
+        /// </summary>
+        /// <returns></returns>
+        public string getMoveDirection()
+        {
+            return moveDirection;
+        }
+
+        /// <summary>
+        /// Returns the fire type
+        /// </summary>
+        /// <returns></returns>
+        public string getFire()
+        {
+            return fire;
+        }
+
+        /// <summary>
+        /// Returns the turret direction
+        /// </summary>
+        /// <returns></returns>
+        public Vector2D getTurretDirection()
+        {
+            return turretAimDirection;
+        }
+
+        /// <summary>
         /// Sets the move direction to the given string
         /// </summary>
         /// <param name="dir"></param>

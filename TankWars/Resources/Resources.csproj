@@ -69,6 +69,7 @@
     <Content Include="Images\YellowTurret.png" />
     <Content Include="Libraries\Newtonsoft.Json.dll" />
     <Content Include="README.txt" />
+    <Content Include="settings.xml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
