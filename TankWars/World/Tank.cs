@@ -49,7 +49,7 @@ namespace TankWars
         /// The amount of hp the tank has
         /// </summary>
         [JsonProperty(PropertyName = "hp")]
-        private int hitPoints = 3;
+        private int hitPoints = Constants.hitpoints;
 
         /// <summary>
         /// The current score of the tank
@@ -191,8 +191,35 @@ namespace TankWars
         /// <param name="input"></param>
         public void updateTank(ControlCommand input)
         {
-            // logic
-            throw new NotImplementedException();
+            double x = location.GetX();
+            double y = location.GetY();
+
+            switch (input.getMoveDirection())
+            {
+                case "left":
+                    x -= Constants.engineStrength;
+                    break;
+                case "right":
+                    x += Constants.engineStrength;
+                    break;
+                case "up":
+                    y -= Constants.engineStrength;
+                    break;
+                case "down":
+                    y += Constants.engineStrength;
+                    break;
+            }
+            
+            if(x > Constants.worldSize)
+            {
+                x -= Constants.worldSize;
+            }
+            if (y > Constants.worldSize)
+            {
+                y -= Constants.worldSize;
+            }
+
+            location = new Vector2D(x, y);
         }
     }
 }

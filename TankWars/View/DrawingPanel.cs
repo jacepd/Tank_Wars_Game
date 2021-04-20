@@ -144,7 +144,7 @@ namespace View
                     DrawObjectWithTransform(e, null, 0, 0, 0, BackgroundDrawer);
 
                     // Draw the walls
-                    foreach (Wall wall in theWorld.getWalls())
+                    foreach (Wall wall in theWorld.getWalls().Values)
                     {
                         double firstX = wall.getFirstEndpoint().GetX();
                         double secondX = wall.getSecondEndpoint().GetX();
@@ -191,13 +191,13 @@ namespace View
                     }
 
                     // Draw the powerups
-                    foreach (Powerup powerup in theWorld.getPowerups())
+                    foreach (Powerup powerup in theWorld.getPowerups().Values)
                     {
                         DrawObjectWithTransform(e, powerup, powerup.getLocation().GetX(), powerup.getLocation().GetY(), 0, PowerupDrawer);
                     }
 
                     // Draw the tanks
-                    foreach (Tank tank in theWorld.getTanks())
+                    foreach (Tank tank in theWorld.getTanks().Values)
                     {
                         if(tank.getHealth() > 0)
                         {
@@ -209,7 +209,7 @@ namespace View
                     }
 
                     // Draw the projectiles
-                    foreach (Projectile projectile in theWorld.getProjectiles())
+                    foreach (Projectile projectile in theWorld.getProjectiles().Values)
                     {
                         DrawObjectWithTransform(e, projectile, projectile.getLocation().GetX(), projectile.getLocation().GetY(), projectile.getDirection().ToAngle(), ProjectileDrawer);
                     }

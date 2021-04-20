@@ -183,7 +183,7 @@ namespace TankWars
         /// <param name="state"></param>
         private void SendWalls(SocketState state)
         {
-            foreach (Wall wall in theWorld.getWalls())
+            foreach (Wall wall in theWorld.getWalls().Values)
             {
                 string json = JsonConvert.SerializeObject(wall);
 
@@ -204,21 +204,21 @@ namespace TankWars
                 foreach(SocketState client in clients.Keys)
                 {
                     // Send tanks
-                    foreach(Tank tank in theWorld.getTanks())
+                    foreach(Tank tank in theWorld.getTanks().Values)
                     {
                         string json = JsonConvert.SerializeObject(tank);
                         Networking.Send(client.TheSocket, json + "\n");
                     }
 
                     // Send projectiles
-                    foreach(Projectile proj in theWorld.getProjectiles())
+                    foreach(Projectile proj in theWorld.getProjectiles().Values)
                     {
                         string json = JsonConvert.SerializeObject(proj);
                         Networking.Send(client.TheSocket, json + "\n");
                     }
 
                     // Send beams
-                    foreach(Beam beam in theWorld.getBeams())
+                    foreach(Beam beam in theWorld.getBeams().Values)
                     {
                         string json = JsonConvert.SerializeObject(beam);
                         Networking.Send(client.TheSocket, json + "\n");
@@ -226,7 +226,7 @@ namespace TankWars
                     }
 
                     // Send powerups
-                    foreach(Powerup power in theWorld.getPowerups())
+                    foreach(Powerup power in theWorld.getPowerups().Values)
                     {
                         string json = JsonConvert.SerializeObject(power);
                         Networking.Send(client.TheSocket, json + "\n");
@@ -257,7 +257,23 @@ namespace TankWars
                         Tank tank = theWorld.getTank(playerID);
                         tank.updateTank(input);
 
-                        // Projectile logic
+                        if (input.getFire() == "main")
+                        {
+                            // Projectile logic
+                            if (theWorld.getProjectiles().ContainsKey(playerID)) 
+                            {
+                                Projectile projectile = theWorld.getProjectile(playerID);
+                                projectile.updateProjectile(input);
+                            }
+                            
+                            Projectile proj = new Projectile();
+                            theWorld.addProjectile(proj);
+                        }
+                        else if(input.getFire() == "alt")
+                        {
+                            Beam beam = new Beam();
+                            theWorld.addBeam(beam);
+                        }
                     }
                 }
             }

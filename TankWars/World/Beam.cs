@@ -44,7 +44,15 @@ namespace TankWars
         /// </summary>
         public Beam()
         {
+            
+        }
 
+        public Beam(int ID, Vector2D orig, Vector2D dir, int ownerID)
+        {
+            this.ID = ID;
+            origin = orig;
+            direction = dir;
+            this.ownerID = ownerID;
         }
 
         /// <summary>

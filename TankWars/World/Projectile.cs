@@ -97,5 +97,16 @@ namespace TankWars
         {
             return ownerID;
         }
+
+        /// <summary>
+        /// Updates the projectile based on what the client sent
+        /// </summary>
+        /// <param name="input"></param>
+        public void updateProjectile(ControlCommand input)
+        {
+            Vector2D aiming = input.getTurretDirection();
+
+            direction = aiming * Constants.projectileSpeed;
+        }
     }
 }

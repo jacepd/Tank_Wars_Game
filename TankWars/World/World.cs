@@ -92,49 +92,54 @@ namespace TankWars
             return Tanks[playerID];
         }
 
+        public Projectile getProjectile(int playerID)
+        {
+            return Projectiles[playerID];
+        }
+
         /// <summary>
         /// Returns IEnumerable of all the tanks in this world
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Tank> getTanks()
+        public Dictionary<int, Tank> getTanks()
         {
-            return Tanks.Values;
+            return Tanks;
         }
 
         /// <summary>
         /// Returns IEnumerable of all the walls in this world
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Wall> getWalls()
+        public Dictionary<int, Wall> getWalls()
         {
-            return Walls.Values;
+            return Walls;
         }
 
         /// <summary>
         /// Returns IEnumerable of all projectiles in the world
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Projectile> getProjectiles()
+        public Dictionary<int, Projectile> getProjectiles()
         {
-            return Projectiles.Values;
+            return Projectiles;
         }
 
         /// <summary>
         /// Returns IEnumerable of all the powerups in this world
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Powerup> getPowerups()
+        public Dictionary<int, Powerup> getPowerups()
         {
-            return Powerups.Values;
+            return Powerups;
         }
 
         /// <summary>
         /// Returns IEnumerable of all the beams in this world
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Beam> getBeams()
+        public Dictionary<int, Beam> getBeams()
         {
-            return Beams.Values;
+            return Beams;
         }
 
         /// <summary>
@@ -223,7 +228,7 @@ namespace TankWars
 
         public void removeBeam(Beam beam)
         {
-
+            Beams.Remove(beam.getID());
         }
 
     }

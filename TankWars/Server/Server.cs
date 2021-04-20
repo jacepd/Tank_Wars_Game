@@ -14,11 +14,6 @@ namespace Server
         private static World world;
         private static ServerController control;
 
-        private static int worldSize;
-        private static int MSPerFrame;
-        private static int framesPerShot;
-        private static int respawnRate;
-
         static void Main(string[] args)
         {
             control = new ServerController();
@@ -35,7 +30,7 @@ namespace Server
             {
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
-                while(stopwatch.ElapsedMilliseconds < MSPerFrame)
+                while(stopwatch.ElapsedMilliseconds < Constants.MSPerFrame)
                 {
                     // Do nothing
                 }
@@ -67,23 +62,38 @@ namespace Server
                         switch (reader.Name)
                         {
                             case "UniverseSize":
-                                worldSize = reader.ReadElementContentAsInt();
+                                Constants.worldSize = reader.ReadElementContentAsInt();
                                 break;
                             case "MSPerFrame":
-                                MSPerFrame = reader.ReadElementContentAsInt();
+                                Constants.MSPerFrame = reader.ReadElementContentAsInt();
                                 break;
                             case "FramesPerShot":
-                                framesPerShot = reader.ReadElementContentAsInt();
+                                Constants.framesPerShot = reader.ReadElementContentAsInt();
                                 break;
                             case "RespawnRate":
-                                respawnRate = reader.ReadElementContentAsInt();
+                                Constants.respawnRate = reader.ReadElementContentAsInt();
+                                break;
+                            case "Hitpoints":
+                                Constants.hitpoints = reader.ReadElementContentAsInt();
+                                break;
+                            case "ProjectileSpeed":
+                                Constants.projectileSpeed = reader.ReadElementContentAsInt();
+                                break;
+                            case "EngineStrength":
+                                Constants.engineStrength = reader.ReadElementContentAsInt();
+                                break;
+                            case "MaxPowerups":
+                                Constants.maxPowerups = reader.ReadElementContentAsInt();
+                                break;
+                            case "MaxPowerupDelay":
+                                Constants.maxPowerupDelay = reader.ReadElementContentAsInt();
                                 break;
                             case "Wall":
                                 // Parse walls???
                                 break;
                         }
                     }
-                }               
+                }
             }
         }
 

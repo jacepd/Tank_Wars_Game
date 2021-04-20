@@ -2,7 +2,12 @@
   <UniverseSize>2000</UniverseSize>
   <MSPerFrame>17</MSPerFrame>
   <FramesPerShot>80</FramesPerShot>
-  <RespawnRate>300</RespawnRate> 
+  <RespawnRate>300</RespawnRate>
+	<Hitpoints>3</Hitpoints>
+	<ProjectileSpeed>25</ProjectileSpeed>
+	<EngineStrength>3</EngineStrength>
+	<MaxPowerups>2</MaxPowerups>
+	<MaxPowerupDelay>1650</MaxPowerupDelay>
   
   
   <!-- top border -->
