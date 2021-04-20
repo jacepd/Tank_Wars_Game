@@ -24,6 +24,7 @@ namespace Server
             control = new ServerController();
             control.ServerStartupEvent += ServerRunning;
             control.NewClentConnectedEvent += ClientConnected;
+            control.ErrorEvent += HandleError;
             world = control.getWorld();
 
             ParseSettings();
@@ -43,7 +44,7 @@ namespace Server
                 Thread thread = new Thread(control.updateWorld);
                 thread.Start();
 
-                control.CheckForDisconnected();
+                //control.CheckForDisconnected();
 
                 control.SendWorld();
 
@@ -57,7 +58,7 @@ namespace Server
         /// </summary>
         public static void ParseSettings()
         {
-            using (XmlReader reader = XmlReader.Create("..\\..\\..\\Resources\\settings.xml"))
+            using (XmlReader reader = XmlReader.Create("..\\..\\..\\..\\Resources\\settings.xml"))
             {
                 while (reader.Read())
                 {
@@ -104,6 +105,15 @@ namespace Server
         {
             Console.WriteLine("Accepted new connection.");
             Console.WriteLine("Player(" + playerID + ") " + playerName + " joined");
+        }
+
+        /// <summary>
+        /// Print to console when an error occurs
+        /// </summary>
+        /// <param name="message"></param>
+        private static void HandleError(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

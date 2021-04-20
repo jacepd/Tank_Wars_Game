@@ -68,6 +68,7 @@ namespace TankWars
             if (state.ErrorOccurred)
             {
                 ErrorEvent("Issue with connection");
+                return;
             }
 
             state.OnNetworkAction = HandleClient;
@@ -83,7 +84,8 @@ namespace TankWars
         {
             if (state.ErrorOccurred)
             {
-                ErrorEvent("Issue with connection");
+                ErrorEvent("Issue handling client");
+                return;
             }
 
             string firstData = state.GetData();
@@ -143,6 +145,7 @@ namespace TankWars
             if (state.ErrorOccurred)
             {
                 ErrorEvent("Issue receiving data");
+                return;
             }
 
             string inputData = state.GetData();
