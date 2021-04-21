@@ -186,6 +186,30 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Sets the value of died to true
+        /// </summary>
+        public void setDead()
+        {
+            died = true;
+        }
+
+        /// <summary>
+        /// Sets the value of died to false
+        /// </summary>
+        public void setAlive()
+        {
+            died = false;
+        }
+
+        /// <summary>
+        /// Sets the value of disconnected to true
+        /// </summary>
+        public void setDisconnected()
+        {
+            disconnected = true;
+        }
+
+        /// <summary>
         /// Updates the tank to match the given input
         /// </summary>
         /// <param name="input"></param>
@@ -198,18 +222,26 @@ namespace TankWars
             {
                 case "left":
                     x -= Constants.engineStrength;
+                    orientation = new Vector2D(-1, 0);
                     break;
                 case "right":
                     x += Constants.engineStrength;
+                    orientation = new Vector2D(1, 0);
                     break;
                 case "up":
                     y -= Constants.engineStrength;
+                    orientation = new Vector2D(0, -1);
                     break;
                 case "down":
                     y += Constants.engineStrength;
+                    orientation = new Vector2D(0, -1);
                     break;
             }
+
+            // Set direction of turret
+            aiming = input.getTurretDirection();
             
+            // Wraparound
             if(x > Constants.worldSize)
             {
                 x -= Constants.worldSize;

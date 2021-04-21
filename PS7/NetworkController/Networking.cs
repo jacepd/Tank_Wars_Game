@@ -246,7 +246,7 @@ namespace NetworkUtil
             {
                 state.TheSocket.BeginReceive(state.buffer, 0, state.buffer.Length, SocketFlags.None, ReceiveCallback, state);
             }
-            catch
+            catch (Exception e)
             {
                 SetErrorFlag(state, "Issue receiving data");
             }

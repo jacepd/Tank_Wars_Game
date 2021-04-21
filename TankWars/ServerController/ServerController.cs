@@ -13,7 +13,7 @@ namespace TankWars
     public class ServerController
     {
         private World theWorld;        
-        private int worldSize = 500;
+        private int worldSize;
         private int numPlayers; // The number of players who have connected to this server since it started
 
         private int powerupDelay; // Number of frames that should pass before a powerup is created
@@ -39,6 +39,7 @@ namespace TankWars
         /// </summary>
         public ServerController()
         {
+            worldSize = 2000;
             theWorld = new World(worldSize);
             clients = new Dictionary<SocketState, int>();
             numPlayers = 0;
@@ -166,7 +167,8 @@ namespace TankWars
         /// <returns></returns>
         private bool collidesWithAnything(Vector2D randomLocation)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return false;
         }
 
         /// <summary>
@@ -201,12 +203,17 @@ namespace TankWars
                     }
 
                     ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
-                    clientInputs.Add(newInput, clients[state]);
+
+                    // Prevents multiple inputs in one frame
+                    if (!clientInputs.ContainsValue(clients[state]))
+                    {
+                        clientInputs.Add(newInput, clients[state]);
+                    }                   
                 }
             }
 
             // Continue event loop
-            state.RemoveData(0, inputs.Length - lastItemLength);
+            state.RemoveData(0, inputData.Length - lastItemLength);
             Networking.GetData(state);
         }
 
@@ -328,6 +335,17 @@ namespace TankWars
                         }
                     }
 
+                    foreach(Tank tank in theWorld.getTanks().Values)
+                    {
+                        if (tank.getDisconnected())
+                        {
+                            // Remove disconnected tank
+                        }
+                    }
+
+                    // Remove inputs after they've been processed
+                    clientInputs.Clear();
+
                     // Create powerups
                     if(framesSinceLastPowerup > powerupDelay && theWorld.getPowerups().Count < Constants.maxPowerups)
                     {
@@ -353,13 +371,19 @@ namespace TankWars
             // Locks the world because its using clients
             lock (theWorld)
             {
+
                 foreach(SocketState client in clients.Keys)
                 {
                     if (client.ErrorOccurred)
                     {
                         ErrorEvent("Client " + clients[client] + " disconnected");
+
+                        // Notify clients that tank has disconnected
+                        Tank tank = theWorld.getTanks()[clients[client]];
+                        tank.setDisconnected();
                     }
                 }
+
             }
         }
         
