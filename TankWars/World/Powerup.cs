@@ -41,6 +41,13 @@ namespace TankWars
 
         }
 
+        public Powerup(int ID, Vector2D loc, bool died)
+        {
+            this.ID = ID;
+            location = loc;
+            this.died = died;
+        }
+
         /// <summary>
         /// Returns the ID of this powerup
         /// </summary>

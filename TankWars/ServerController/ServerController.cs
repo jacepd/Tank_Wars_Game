@@ -13,6 +13,9 @@ namespace TankWars
         private int worldSize = 500;
         private int numPlayers; // The number of players who have ever connected to this server
 
+        private int powerupDelay;
+        private int framesSinceLastPowerup;
+
         // Maps all client connections to their playerID
         private Dictionary<SocketState, int> clients; 
 
@@ -36,6 +39,8 @@ namespace TankWars
             theWorld = new World(worldSize);
             clients = new Dictionary<SocketState, int>();
             numPlayers = 0;
+            powerupDelay = Constants.maxPowerupDelay;
+            framesSinceLastPowerup = 0;
 
             clientInputs = new Dictionary<ControlCommand, int>();
         }
@@ -132,6 +137,26 @@ namespace TankWars
         /// </summary>
         /// <returns></returns>
         private Vector2D generateRandomLocation()
+        {
+            int size = worldSize - 100;
+            Random rand = new Random(size);
+
+            double x = 50 + rand.NextDouble();
+            double y = 50 + rand.NextDouble();
+
+            Vector2D randomLocation = new Vector2D(x, y);
+
+            if (collidesWithAnything(randomLocation))
+            {
+                return generateRandomLocation();
+            }
+            else
+            {
+                return randomLocation;
+            }
+        }
+
+        private bool collidesWithAnything(Vector2D randomLocation)
         {
             throw new NotImplementedException();
         }
@@ -265,18 +290,31 @@ namespace TankWars
                                 Projectile projectile = theWorld.getProjectile(playerID);
                                 projectile.updateProjectile(input);
                             }
-                            
-                            Projectile proj = new Projectile();
-                            theWorld.addProjectile(proj);
+                            else
+                            {
+                                Projectile proj = new Projectile(theWorld.getNumProjectileCreated(), tank.getLocation(), input.getTurretDirection(), false, tank.getID());
+                                theWorld.addProjectile(proj);
+                            }
                         }
                         else if(input.getFire() == "alt")
                         {
-                            Beam beam = new Beam();
+                            Beam beam = new Beam(theWorld.getNumBeamsCreated(), tank.getLocation(), input.getTurretDirection(), tank.getID());
                             theWorld.addBeam(beam);
                         }
                     }
+
+                    if(framesSinceLastPowerup > powerupDelay && theWorld.getPowerups().Count < Constants.maxPowerups)
+                    {
+                        Powerup powerup = new Powerup(theWorld.getNumPowerupsCreated(), generateRandomLocation(), false);
+                        theWorld.addPowerup(powerup);
+                        framesSinceLastPowerup = 0;
+                        Random rand = new Random(Constants.maxPowerupDelay);
+                        powerupDelay = rand.Next();
+                    }
+
                 }
             }
+            framesSinceLastPowerup++;
         }
 
         /// <summary>

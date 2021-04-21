@@ -16,6 +16,10 @@ namespace TankWars
         private int size; // The length and width of the game screen
         private int playerID;  // Stores the playerID for this client
 
+        private int numProjectilesCreated;
+        private int numBeamsCreated;
+        private int numPowerupsCreated;
+
         // Items that need to be drawn every frame
         private Dictionary<int, Wall> Walls;
         private Dictionary<int, Tank> Tanks;
@@ -35,6 +39,9 @@ namespace TankWars
             Projectiles = new Dictionary<int, Projectile>();
             Powerups = new Dictionary<int, Powerup>();
             Beams = new Dictionary<int, Beam>();
+            numPowerupsCreated = 0;
+            numProjectilesCreated = 0;
+            numBeamsCreated = 0;
         }
 
         /// <summary>
@@ -175,6 +182,7 @@ namespace TankWars
                 Projectiles.Remove(newProjectile.getID());
             }
             Projectiles.Add(newProjectile.getID(), newProjectile);
+            numProjectilesCreated++;
         }
 
         /// <summary>
@@ -188,6 +196,7 @@ namespace TankWars
                 Powerups.Remove(newPowerup.getID());
             }
             Powerups.Add(newPowerup.getID(), newPowerup);
+            numPowerupsCreated++;
         }
 
         /// <summary>
@@ -197,6 +206,7 @@ namespace TankWars
         public void addBeam(Beam newBeam)
         {
             Beams.Add(newBeam.getID(), newBeam);
+            numBeamsCreated++;
         }
 
         /// <summary>
@@ -229,6 +239,21 @@ namespace TankWars
         public void removeBeam(Beam beam)
         {
             Beams.Remove(beam.getID());
+        }
+
+        public int getNumProjectileCreated()
+        {
+            return numProjectilesCreated;
+        }
+
+        public int getNumPowerupsCreated()
+        {
+            return numPowerupsCreated;
+        }
+
+        public int getNumBeamsCreated()
+        {
+            return numBeamsCreated;
         }
 
     }

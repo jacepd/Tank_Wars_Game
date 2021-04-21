@@ -53,6 +53,15 @@ namespace TankWars
 
         }
 
+        public Projectile(int ID, Vector2D loc, Vector2D dir, bool died, int ownerID)
+        {
+            this.ID = ID;
+            location = loc;
+            direction = dir;
+            this.died = died;
+            this.ownerID = ownerID;
+        }
+
         /// <summary>
         /// Returns the ID
         /// </summary>
