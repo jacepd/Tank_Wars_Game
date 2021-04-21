@@ -16,6 +16,7 @@ namespace TankWars
         private int size; // The length and width of the game screen
         private int playerID;  // Stores the playerID for this client
 
+        // Number of objects created since game started; used for IDs
         private int numProjectilesCreated;
         private int numBeamsCreated;
         private int numPowerupsCreated;
@@ -90,22 +91,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Returns the tank with the given playerID
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <returns></returns>
-        public Tank getTank(int playerID)
-        {
-            return Tanks[playerID];
-        }
-
-        public Projectile getProjectile(int playerID)
-        {
-            return Projectiles[playerID];
-        }
-
-        /// <summary>
-        /// Returns IEnumerable of all the tanks in this world
+        /// Returns Dictionary of all the tanks in this world
         /// </summary>
         /// <returns></returns>
         public Dictionary<int, Tank> getTanks()
@@ -114,7 +100,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Returns IEnumerable of all the walls in this world
+        /// Returns Dictionary of all the walls in this world
         /// </summary>
         /// <returns></returns>
         public Dictionary<int, Wall> getWalls()
@@ -123,7 +109,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Returns IEnumerable of all projectiles in the world
+        /// Returns Dictionary of all projectiles in the world
         /// </summary>
         /// <returns></returns>
         public Dictionary<int, Projectile> getProjectiles()
@@ -132,7 +118,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Returns IEnumerable of all the powerups in this world
+        /// Returns Dictionary of all the powerups in this world
         /// </summary>
         /// <returns></returns>
         public Dictionary<int, Powerup> getPowerups()
@@ -141,7 +127,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Returns IEnumerable of all the beams in this world
+        /// Returns Dictionary of all the beams in this world
         /// </summary>
         /// <returns></returns>
         public Dictionary<int, Beam> getBeams()
@@ -236,21 +222,40 @@ namespace TankWars
             Powerups.Remove(powerup.getID());
         }
 
+        /// <summary>
+        /// Removes the given beam from the world
+        /// </summary>
+        /// <param name="beam"></param>
         public void removeBeam(Beam beam)
         {
             Beams.Remove(beam.getID());
         }
 
+        /// <summary>
+        /// Returns the number of projectiles that have been created
+        /// since the start of the game
+        /// </summary>
+        /// <returns></returns>
         public int getNumProjectileCreated()
         {
             return numProjectilesCreated;
         }
 
+        /// <summary>
+        /// Returns the number of powerups that have been created
+        /// since the start of the game
+        /// </summary>
+        /// <returns></returns>
         public int getNumPowerupsCreated()
         {
             return numPowerupsCreated;
         }
 
+        /// <summary>
+        /// Returns the number of beams that have been created
+        /// since the start of the game
+        /// </summary>
+        /// <returns></returns>
         public int getNumBeamsCreated()
         {
             return numBeamsCreated;

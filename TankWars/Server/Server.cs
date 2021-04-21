@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Written by Joshua Hardy and Jace Duennebeil, Spring 2021
+// Uses code written by Daniel Kopta
+
+using System;
 using System.Diagnostics;
 using System.Threading;
 using TankWars;
@@ -26,6 +29,7 @@ namespace Server
 
             control.StartServer();
 
+            // Loops once per frame
             while (true)
             {
                 Stopwatch stopwatch = new Stopwatch();
@@ -118,7 +122,7 @@ namespace Server
         }
 
         /// <summary>
-        /// Print to console when an error occurs
+        /// Prints message to console when an error occurs
         /// </summary>
         /// <param name="message"></param>
         private static void HandleError(string message)

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Written by Joshua Hardy and Jace Duennebeil, Spring 2021
+// Uses code written by Daniel Kopta
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,9 +14,9 @@ namespace TankWars
     {
         private World theWorld;        
         private int worldSize = 500;
-        private int numPlayers; // The number of players who have ever connected to this server
+        private int numPlayers; // The number of players who have connected to this server since it started
 
-        private int powerupDelay;
+        private int powerupDelay; // Number of frames that should pass before a powerup is created
         private int framesSinceLastPowerup;
 
         // Maps all client connections to their playerID
@@ -133,7 +136,7 @@ namespace TankWars
         }
 
         /// <summary>
-        /// Returns the location where a tank should be spawned
+        /// Returns a random location that doesn't overlap any pre-existing objects
         /// </summary>
         /// <returns></returns>
         private Vector2D generateRandomLocation()
@@ -156,6 +159,11 @@ namespace TankWars
             }
         }
 
+        /// <summary>
+        /// Checks if the given point overlaps any pre-existing objects
+        /// </summary>
+        /// <param name="randomLocation"></param>
+        /// <returns></returns>
         private bool collidesWithAnything(Vector2D randomLocation)
         {
             throw new NotImplementedException();
@@ -277,36 +285,56 @@ namespace TankWars
                 {
                     foreach (ControlCommand input in clientInputs.Keys)
                     {
-                        // Tank movement logic
+                        // Update tanks
                         int playerID = clientInputs[input];
-                        Tank tank = theWorld.getTank(playerID);
+                        Tank tank = theWorld.getTanks()[playerID];
                         tank.updateTank(input);
 
+                        // Update projectiles
                         if (input.getFire() == "main")
                         {
-                            // Projectile logic
+                            // Update existing projectile location
                             if (theWorld.getProjectiles().ContainsKey(playerID)) 
                             {
-                                Projectile projectile = theWorld.getProjectile(playerID);
+                                Projectile projectile = theWorld.getProjectiles()[playerID];
                                 projectile.updateProjectile(input);
                             }
+
+                            // Create new projectile
                             else
                             {
-                                Projectile proj = new Projectile(theWorld.getNumProjectileCreated(), tank.getLocation(), input.getTurretDirection(), false, tank.getID());
+                                // Arguments
+                                int projID = theWorld.getNumProjectileCreated();
+                                Vector2D projLocation = tank.getLocation();
+                                Vector2D projDirection = input.getTurretDirection();
+                                int projOwner = tank.getID();
+
+                                Projectile proj = new Projectile(projID, projLocation, projDirection, false, projOwner);
                                 theWorld.addProjectile(proj);
                             }
                         }
+
+                        // Create beams
                         else if(input.getFire() == "alt")
                         {
-                            Beam beam = new Beam(theWorld.getNumBeamsCreated(), tank.getLocation(), input.getTurretDirection(), tank.getID());
+                            // Arguments
+                            int beamID = theWorld.getNumBeamsCreated();
+                            Vector2D beamLocation = tank.getLocation();
+                            Vector2D beamDirection = input.getTurretDirection();
+                            int beamOwner = tank.getID();
+
+                            Beam beam = new Beam(beamID, beamLocation, beamDirection, beamOwner);
                             theWorld.addBeam(beam);
                         }
                     }
 
+                    // Create powerups
                     if(framesSinceLastPowerup > powerupDelay && theWorld.getPowerups().Count < Constants.maxPowerups)
                     {
                         Powerup powerup = new Powerup(theWorld.getNumPowerupsCreated(), generateRandomLocation(), false);
                         theWorld.addPowerup(powerup);
+
+                        // Reset frame counter and randomize delay
                         framesSinceLastPowerup = 0;
                         Random rand = new Random(Constants.maxPowerupDelay);
                         powerupDelay = rand.Next();
