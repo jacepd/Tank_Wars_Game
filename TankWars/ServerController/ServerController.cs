@@ -339,7 +339,12 @@ namespace TankWars
                     {
                         string json = JsonConvert.SerializeObject(power);
                         Networking.Send(client.TheSocket, json + "\n");
-                        powerUpsToRemove.Add(power);
+
+                        if (power.getDied())
+                        {
+                            powerUpsToRemove.Add(power);
+                        }
+                        
                     }
                 }
 
