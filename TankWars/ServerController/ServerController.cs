@@ -448,7 +448,7 @@ namespace TankWars
                         proj.updateProjectile();
 
                         // Check for collisions
-                        if (collidesWithTankOrWall(out object collidedWith, proj.getLocation()))
+                        if (!proj.getDied() && collidesWithTankOrWall(out object collidedWith, proj.getLocation()))
                         {
                             // Tank collision
                             if (collidedWith.GetType().Equals(typeof(Tank)))
