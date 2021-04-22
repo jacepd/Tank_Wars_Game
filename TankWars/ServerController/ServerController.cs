@@ -154,7 +154,7 @@ namespace TankWars
 
             Vector2D randomLocation = new Vector2D(randX, randY);
 
-            if (collidesWithAnything(randomLocation))
+            if (collidesWithTankOrWall(out object collisionObj, randomLocation))
             {
                 return generateRandomLocation();
             }
@@ -169,9 +169,59 @@ namespace TankWars
         /// </summary>
         /// <param name="randomLocation"></param>
         /// <returns></returns>
-        private bool collidesWithAnything(Vector2D randomLocation)
+        private bool collidesWithTankOrWall(out object collidedWith, Vector2D objectLocation)
         {
-            //throw new NotImplementedException();
+            collidedWith = null;
+            double objX = objectLocation.GetX();
+            double objY = objectLocation.GetY();
+
+            // Check for tank collisions
+            foreach (Tank tank in theWorld.getTanks().Values)
+            {
+                double tankX = tank.getLocation().GetX();
+                double tankY = tank.getLocation().GetY();
+
+                double distance = Math.Sqrt((objX - tankX) * (objX - tankX) + (objY - tankY) * (objY - tankY));
+                if (distance < 30)
+                {
+                    collidedWith = tank;
+                    return true;
+                }
+            }
+
+            // Check for wall collisions
+            foreach (Wall wall in theWorld.getWalls().Values)
+            {
+                double wallFirstX = wall.getFirstEndpoint().GetX();
+                double wallSecondX = wall.getSecondEndpoint().GetX();
+                double wallFirstY = wall.getFirstEndpoint().GetY();
+                double wallSecondY = wall.getSecondEndpoint().GetY();
+
+                if (wall.isVertical())
+                {
+                    if(Math.Abs(objX - wallFirstX) < 25)
+                    {
+                        if ((objY < wallFirstY + 25 && objY > wallSecondY - 25) || (objY < wallSecondY + 25 && objY > wallFirstY - 25))
+                        {
+                            collidedWith = wall;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if(Math.Abs(objY - wallFirstY) < 25)
+                    {
+                        if ((objX < wallFirstX + 25 && objX > wallSecondX - 25) || (objX < wallSecondX + 25 && objX > wallFirstX - 25))
+                        {
+                            collidedWith = wall;
+                            return true;
+                        }
+                    }
+
+                }
+            }
+
             return false;
         }
 
@@ -295,6 +345,23 @@ namespace TankWars
                     theWorld.removeBeam(beam);
                 }
 
+                // Respawn dead tanks
+                foreach(Tank tank in theWorld.getTanks().Values)
+                {
+                    if (tank.getDied())
+                    {
+                        if(tank.getFramesSinceDied() >= Constants.respawnRate)
+                        {
+                            tank.resetTank();
+                            tank.setLocation(generateRandomLocation());
+                        }
+                        else
+                        {
+                            tank.updateRespawnCounter();
+                        }
+                    }
+                }
+
                 // Remove disconnected Tanks
                 foreach(Tank tank in tanksToRemove)
                 {
@@ -322,34 +389,33 @@ namespace TankWars
                         // Update tanks
                         int playerID = clientInputs[input];
                         Tank tank = theWorld.getTanks()[playerID];
+                        Vector2D prevLocation = tank.getLocation();
                         tank.updateTank(input);
 
-                        // Update projectiles
-                        if (input.getFire() == "main")
+                        // Check for tank collisions
+                        if (collidesWithTankOrWall(out object collidedWith, tank.getLocation()))
                         {
-                            // Update existing projectile location
-                            if (theWorld.getProjectiles().ContainsKey(playerID)) 
+                            if (collidedWith.GetType().Equals(typeof(Wall)))
                             {
-                                Projectile projectile = theWorld.getProjectiles()[playerID];
-                                projectile.updateProjectile(input);
-                            }
-
-                            // Create new projectile
-                            else
-                            {
-                                // Arguments
-                                int projID = theWorld.getNumProjectileCreated();
-                                Vector2D projLocation = tank.getLocation();
-                                Vector2D projDirection = input.getTurretDirection();
-                                int projOwner = tank.getID();
-
-                                Projectile proj = new Projectile(projID, projLocation, projDirection, false, projOwner);
-                                theWorld.addProjectile(proj);
+                                tank.setLocation(prevLocation);
                             }
                         }
 
+                        // Create new projectile
+                        if (input.getFire().Equals("main"))
+                        {                           
+                            // Arguments
+                            int projID = theWorld.getNumProjectileCreated();
+                            Vector2D projLocation = tank.getLocation();
+                            Vector2D projDirection = input.getTurretDirection();
+                            int projOwner = tank.getID();
+
+                            Projectile proj = new Projectile(projID, projLocation, projDirection, false, projOwner);
+                            theWorld.addProjectile(proj);
+                        }
+
                         // Create beams
-                        else if(input.getFire() == "alt")
+                        else if(input.getFire().Equals("alt"))
                         {
                             // Arguments
                             int beamID = theWorld.getNumBeamsCreated();
@@ -359,6 +425,39 @@ namespace TankWars
 
                             Beam beam = new Beam(beamID, beamLocation, beamDirection, beamOwner);
                             theWorld.addBeam(beam);
+                        }
+                    }
+
+                    // Update existing projectile location
+                    foreach (Projectile proj in theWorld.getProjectiles().Values)
+                    {
+                        proj.updateProjectile();
+
+                        // Check for collisions
+                        if (collidesWithTankOrWall(out object collidedWith, proj.getLocation()))
+                        {
+                            // Tank collision
+                            if (collidedWith.GetType().Equals(typeof(Tank)))
+                            {
+                                Tank collideTank = (Tank)collidedWith;
+                                if (collideTank.getID() != proj.getOwnerID())
+                                {
+                                    collideTank.decreaseHitpoints();
+                                    proj.setDead();
+                                }
+                            }
+
+                            // Wall collision
+                            else
+                            {
+                                proj.setDead();
+                            }
+                        }
+
+                        // Delete projectile if out of bounds
+                        if (Math.Abs(proj.getLocation().GetX()) > (worldSize / 2) || Math.Abs(proj.getLocation().GetY()) > (worldSize / 2))
+                        {
+                            proj.setDead();
                         }
                     }
 

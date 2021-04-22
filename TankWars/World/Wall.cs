@@ -80,5 +80,15 @@ namespace TankWars
         {
             return secondEndpoint;
         }
+
+        /// <summary>
+        /// Returns whether or not the wall is vertical
+        /// </summary>
+        /// <returns></returns>
+        public bool isVertical()
+        {
+            double difference = (firstEndpoint.GetX() - secondEndpoint.GetY());
+            return Math.Abs(difference) < 0.0001;
+        }
     }
 }

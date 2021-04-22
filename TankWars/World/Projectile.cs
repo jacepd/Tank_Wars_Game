@@ -106,16 +106,22 @@ namespace TankWars
         {
             return ownerID;
         }
+        /// <summary>
+        /// Sets the value of died to true
+        /// </summary>
+        public void setDead()
+        {
+            died = true;
+        }
 
         /// <summary>
         /// Updates the projectile based on what the client sent
         /// </summary>
         /// <param name="input"></param>
-        public void updateProjectile(ControlCommand input)
+        public void updateProjectile()
         {
-            Vector2D aiming = input.getTurretDirection();
-
-            direction = aiming * Constants.projectileSpeed;
+            Vector2D aiming = direction;
+            location = aiming * Constants.projectileSpeed;           
         }
     }
 }

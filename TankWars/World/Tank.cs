@@ -76,6 +76,11 @@ namespace TankWars
         private bool joined = false;
 
         /// <summary>
+        /// How many frames have passed since this tank died
+        /// </summary>
+        private int framesSinceDied = 0;
+
+        /// <summary>
         /// Default tank constructor
         /// </summary>
         public Tank()
@@ -186,6 +191,41 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Returns how many frames have passed since this tank died
+        /// </summary>
+        /// <returns></returns>
+        public int getFramesSinceDied()
+        {
+            return framesSinceDied;
+        }
+
+        /// <summary>
+        /// Increments the value of framesSinceDead
+        /// </summary>
+        public void updateRespawnCounter()
+        {
+            framesSinceDied++;
+        }
+
+        /// <summary>
+        /// Resets the values of died and framesSinceDead to defaults
+        /// </summary>
+        public void resetTank()
+        {
+            framesSinceDied = 0;
+            died = false;
+        }
+
+        /// <summary>
+        /// Sets the tank's location to the given value
+        /// </summary>
+        /// <param name="loc"></param>
+        public void setLocation(Vector2D loc)
+        {
+            location = loc;
+        }
+
+        /// <summary>
         /// Sets the value of died to true
         /// </summary>
         public void setDead()
@@ -207,6 +247,18 @@ namespace TankWars
         public void setDisconnected()
         {
             disconnected = true;
+        }
+
+        /// <summary>
+        /// Decreases tank's hitpoints
+        /// </summary>
+        public void decreaseHitpoints()
+        {
+            hitPoints -= 1;
+            if(hitPoints == 0)
+            {
+                died = true;
+            }
         }
 
         /// <summary>
