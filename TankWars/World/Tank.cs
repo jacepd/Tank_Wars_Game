@@ -293,6 +293,15 @@ namespace TankWars
         {
             framesSinceDied = 0;
             died = false;
+            hitPoints = Constants.hitpoints;
+        }
+
+        /// <summary>
+        /// Increments the score of a player when they killed another tank
+        /// </summary>
+        public void incrementScore()
+        {
+            score++;
         }
 
         /// <summary>

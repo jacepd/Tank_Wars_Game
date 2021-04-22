@@ -142,6 +142,71 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Sends the initial walls to a client
+        /// </summary>
+        /// <param name="state"></param>
+        private void SendWalls(SocketState state)
+        {
+            foreach (Wall wall in theWorld.getWalls().Values)
+            {
+                string json = JsonConvert.SerializeObject(wall);
+
+                Networking.Send(state.TheSocket, json + "\n");
+            }
+        }
+
+        /// <summary>
+        /// Receives input data from client
+        /// </summary>
+        /// <param name="state"></param>
+        private void ReceiveCommands(SocketState state)
+        {
+            if (state.ErrorOccurred)
+            {
+                ErrorEvent("Client " + clientToID[state] + " disconnected");
+
+                // Notify clients that tank has disconnected
+                int playerID = clientToID[state];
+                Tank tank = theWorld.getTanks()[playerID];
+                tank.setDisconnected();
+                return;
+            }
+
+            string inputData = state.GetData();
+            string[] inputs = Regex.Split(inputData, @"(?<=[\n])");
+
+            int lastItemLength = 0; // The length of the last item in the message buffer
+
+            lock (clientInputs)
+            {
+                foreach (string item in inputs)
+                {
+                    // Skip empty strings (idk if we really need this here)
+                    if (item.Length == 0)
+                        continue;
+                    // Last message is incomplete, stop parsing
+                    if (item[item.Length - 1] != '\n')
+                    {
+                        lastItemLength = item.Length;
+                        break;
+                    }
+
+                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
+
+                    // Prevents multiple inputs in one frame
+                    if (!clientInputs.ContainsValue(clientToID[state]))
+                    {
+                        clientInputs.Add(newInput, clientToID[state]);
+                    }
+                }
+            }
+
+            // Continue event loop
+            state.RemoveData(0, inputData.Length - lastItemLength);
+            Networking.GetData(state);
+        }
+
+        /// <summary>
         /// Returns a random location that doesn't overlap any pre-existing objects
         /// </summary>
         /// <returns></returns>
@@ -223,71 +288,6 @@ namespace TankWars
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Receives input data from client
-        /// </summary>
-        /// <param name="state"></param>
-        private void ReceiveCommands(SocketState state)
-        {
-            if (state.ErrorOccurred)
-            {
-                ErrorEvent("Client " + clientToID[state] + " disconnected");
-
-                // Notify clients that tank has disconnected
-                int playerID = clientToID[state];
-                Tank tank = theWorld.getTanks()[playerID];
-                tank.setDisconnected();
-                return;
-            }
-
-            string inputData = state.GetData();
-            string[] inputs = Regex.Split(inputData, @"(?<=[\n])");
-
-            int lastItemLength = 0; // The length of the last item in the message buffer
-
-            lock(clientInputs)
-            {
-                foreach (string item in inputs)
-                {
-                    // Skip empty strings (idk if we really need this here)
-                    if (item.Length == 0)
-                        continue;
-                    // Last message is incomplete, stop parsing
-                    if (item[item.Length - 1] != '\n')
-                    {
-                        lastItemLength = item.Length;
-                        break;
-                    }
-
-                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
-
-                    // Prevents multiple inputs in one frame
-                    if (!clientInputs.ContainsValue(clientToID[state]))
-                    {
-                        clientInputs.Add(newInput, clientToID[state]);
-                    }                   
-                }
-            }
-
-            // Continue event loop
-            state.RemoveData(0, inputData.Length - lastItemLength);
-            Networking.GetData(state);
-        }
-
-        /// <summary>
-        /// Sends the initial walls to a client
-        /// </summary>
-        /// <param name="state"></param>
-        private void SendWalls(SocketState state)
-        {
-            foreach (Wall wall in theWorld.getWalls().Values)
-            {
-                string json = JsonConvert.SerializeObject(wall);
-
-                Networking.Send(state.TheSocket, json + "\n");
-            }
         }
 
         /// <summary>
@@ -456,6 +456,8 @@ namespace TankWars
                                 {
                                     collideTank.decreaseHitpoints();
                                     proj.setDead();
+
+                                    // Increment score of the tank that fired the projectile
                                 }
                             }
 
@@ -491,26 +493,6 @@ namespace TankWars
                 }
             }
             framesSinceLastPowerup++;
-        }
-
-        /// <summary>
-        /// Checks all clients in the clients list to see if one has disconnected
-        /// </summary>
-        public void CheckForDisconnected()
-        {
-            // Locks the world because its using clients
-            lock (theWorld)
-            {
-
-                foreach(SocketState client in clientToID.Keys)
-                {
-                    if (client.ErrorOccurred)
-                    {
-                        
-                    }
-                }
-
-            }
         }
         
     }

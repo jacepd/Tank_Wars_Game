@@ -20,6 +20,7 @@ namespace TankWars
         private int numProjectilesCreated;
         private int numBeamsCreated;
         private int numPowerupsCreated;
+        private int numWallsCreated;
 
         // Items that need to be drawn every frame
         private Dictionary<int, Wall> Walls;
@@ -43,6 +44,7 @@ namespace TankWars
             numPowerupsCreated = 0;
             numProjectilesCreated = 0;
             numBeamsCreated = 0;
+            numWallsCreated = 0;
         }
 
         /// <summary>
@@ -259,6 +261,16 @@ namespace TankWars
         public int getNumBeamsCreated()
         {
             return numBeamsCreated;
+        }
+
+        public int getNumWallsCreated()
+        {
+            return numWallsCreated;
+        }
+
+        public void incrementNumWalls()
+        {
+            numWallsCreated++;
         }
 
     }

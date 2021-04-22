@@ -43,8 +43,6 @@ namespace Server
                 Thread thread = new Thread(control.updateWorld);
                 thread.Start();
 
-                //control.CheckForDisconnected();
-
                 control.SendWorld();
 
             }
@@ -93,7 +91,43 @@ namespace Server
                                 Constants.maxPowerupDelay = reader.ReadElementContentAsInt();
                                 break;
                             case "Wall":
-                                // Parse walls???
+                                double firstX = 0;
+                                double firstY = 0;
+                                double secondX = 0;
+                                double secondY = 0;
+
+                                if (reader.Name.Equals("p1"))
+                                {
+                                    if (reader.Name.Equals("x"))
+                                    {
+                                        firstX = reader.ReadElementContentAsDouble();
+                                    }
+                                    else if(reader.Name.Equals("y"))
+                                    {
+                                        firstY = reader.ReadElementContentAsDouble();
+                                    }
+
+                                }
+                                else if (reader.Name.Equals("p2"))
+                                {
+                                    if (reader.Name.Equals("x"))
+                                    {
+                                        secondX = reader.ReadElementContentAsDouble();
+                                    }
+                                    else if (reader.Name.Equals("y"))
+                                    {
+                                        secondY = reader.ReadElementContentAsDouble();
+                                    }
+                                }
+                                Vector2D firstEndpoint = new Vector2D(firstX, firstY);
+                                Vector2D secondEndpoint = new Vector2D(secondX, secondY);
+
+                                Wall wall = new Wall(world.getNumWallsCreated(), firstEndpoint, secondEndpoint);
+
+                                world.addWall(wall);
+
+                                world.incrementNumWalls();
+
                                 break;
                         }
                     }
