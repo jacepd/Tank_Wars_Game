@@ -20,7 +20,10 @@ namespace TankWars
         private int framesSinceLastPowerup;
 
         // Maps all client connections to their playerID
-        private Dictionary<SocketState, int> clients; 
+        private Dictionary<SocketState, int> clientToID;
+
+        // Maps all playerIDs to their client connection
+        private Dictionary<int, SocketState> IDToClient;
 
         // Maps inputs sent by clients to the playerID of the client that sent them
         private Dictionary<ControlCommand, int> clientInputs; 
@@ -41,7 +44,8 @@ namespace TankWars
         {
             worldSize = 2000;
             theWorld = new World(worldSize);
-            clients = new Dictionary<SocketState, int>();
+            clientToID = new Dictionary<SocketState, int>();
+            IDToClient = new Dictionary<int, SocketState>();
             numPlayers = 0;
             powerupDelay = Constants.maxPowerupDelay;
             framesSinceLastPowerup = 0;
@@ -113,7 +117,8 @@ namespace TankWars
 
                     // Save the client state
                     // Need to lock here because clients can disconnect at any time
-                    clients.Add(state, numPlayers);
+                    clientToID.Add(state, numPlayers);
+                    IDToClient.Add(numPlayers, state);
 
                     Vector2D tankLocation = generateRandomLocation();
                     Tank tank = new Tank(numPlayers, playerName, tankLocation);
@@ -142,13 +147,12 @@ namespace TankWars
         /// <returns></returns>
         private Vector2D generateRandomLocation()
         {
-            int size = worldSize - 100;
-            Random rand = new Random(size);
+            Random rand = new Random(worldSize - 100);
 
-            double x = 50 + rand.NextDouble();
-            double y = 50 + rand.NextDouble();
+            double randX = 50 + rand.Next() - (worldSize  /2);
+            double randY = 50 + rand.Next() - (worldSize / 2);
 
-            Vector2D randomLocation = new Vector2D(x, y);
+            Vector2D randomLocation = new Vector2D(randX, randY);
 
             if (collidesWithAnything(randomLocation))
             {
@@ -179,7 +183,12 @@ namespace TankWars
         {
             if (state.ErrorOccurred)
             {
-                ErrorEvent("Issue receiving data");
+                ErrorEvent("Client " + clientToID[state] + " disconnected");
+
+                // Notify clients that tank has disconnected
+                int playerID = clientToID[state];
+                Tank tank = theWorld.getTanks()[playerID];
+                tank.setDisconnected();
                 return;
             }
 
@@ -205,9 +214,9 @@ namespace TankWars
                     ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
 
                     // Prevents multiple inputs in one frame
-                    if (!clientInputs.ContainsValue(clients[state]))
+                    if (!clientInputs.ContainsValue(clientToID[state]))
                     {
-                        clientInputs.Add(newInput, clients[state]);
+                        clientInputs.Add(newInput, clientToID[state]);
                     }                   
                 }
             }
@@ -241,11 +250,18 @@ namespace TankWars
                 // Contains beams to be removed after this frame
                 List<Beam> beamsToRemove = new List<Beam>();
 
-                foreach(SocketState client in clients.Keys)
+                // Contains disconnected tanks to be removed
+                List<Tank> tanksToRemove = new List<Tank>();
+
+                foreach(SocketState client in clientToID.Keys)
                 {
                     // Send tanks
                     foreach(Tank tank in theWorld.getTanks().Values)
                     {
+                        if (tank.getDisconnected())
+                        {
+                            tanksToRemove.Add(tank);
+                        }
                         string json = JsonConvert.SerializeObject(tank);
                         Networking.Send(client.TheSocket, json + "\n");
                     }
@@ -274,9 +290,20 @@ namespace TankWars
                 }
 
                 // Remove beams once they've been sent
-                foreach (Beam beam in beamsToRemove)
+                foreach(Beam beam in beamsToRemove)
                 {
                     theWorld.removeBeam(beam);
+                }
+
+                // Remove disconnected Tanks
+                foreach(Tank tank in tanksToRemove)
+                {
+                    // Remove client associated with this tank
+                    SocketState client = IDToClient[tank.getID()];
+                    clientToID.Remove(client);
+                    IDToClient.Remove(tank.getID());
+
+                    theWorld.removeTank(tank);                    
                 }
             }
         }
@@ -335,14 +362,6 @@ namespace TankWars
                         }
                     }
 
-                    foreach(Tank tank in theWorld.getTanks().Values)
-                    {
-                        if (tank.getDisconnected())
-                        {
-                            // Remove disconnected tank
-                        }
-                    }
-
                     // Remove inputs after they've been processed
                     clientInputs.Clear();
 
@@ -372,15 +391,11 @@ namespace TankWars
             lock (theWorld)
             {
 
-                foreach(SocketState client in clients.Keys)
+                foreach(SocketState client in clientToID.Keys)
                 {
                     if (client.ErrorOccurred)
                     {
-                        ErrorEvent("Client " + clients[client] + " disconnected");
-
-                        // Notify clients that tank has disconnected
-                        Tank tank = theWorld.getTanks()[clients[client]];
-                        tank.setDisconnected();
+                        
                     }
                 }
 

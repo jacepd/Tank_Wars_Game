@@ -43,7 +43,7 @@ namespace Server
                 Thread thread = new Thread(control.updateWorld);
                 thread.Start();
 
-                control.CheckForDisconnected();
+                //control.CheckForDisconnected();
 
                 control.SendWorld();
 
