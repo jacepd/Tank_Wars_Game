@@ -98,6 +98,7 @@ namespace Server
 
                                 if (reader.Name.Equals("p1"))
                                 {
+                                    string tag = reader.Name;
                                     if (reader.Name.Equals("x"))
                                     {
                                         firstX = reader.ReadElementContentAsDouble();
@@ -125,8 +126,6 @@ namespace Server
                                 Wall wall = new Wall(world.getNumWallsCreated(), firstEndpoint, secondEndpoint);
 
                                 world.addWall(wall);
-
-                                world.incrementNumWalls();
 
                                 break;
                         }

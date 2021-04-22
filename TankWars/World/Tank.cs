@@ -350,6 +350,15 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Kills the tank
+        /// </summary>
+        public void kill()
+        {
+            hitPoints = 0;
+            died = true;
+        }
+
+        /// <summary>
         /// Updates the tank to match the given input
         /// </summary>
         /// <param name="input"></param>

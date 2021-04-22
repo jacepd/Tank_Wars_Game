@@ -300,6 +300,9 @@ namespace TankWars
                 // Contains beams to be removed after this frame
                 List<Beam> beamsToRemove = new List<Beam>();
 
+                // Contains powerups to be removed
+                List<Powerup> powerUpsToRemove = new List<Powerup>();
+
                 // Contains disconnected tanks to be removed
                 List<Tank> tanksToRemove = new List<Tank>();
 
@@ -336,6 +339,7 @@ namespace TankWars
                     {
                         string json = JsonConvert.SerializeObject(power);
                         Networking.Send(client.TheSocket, json + "\n");
+                        powerUpsToRemove.Add(power);
                     }
                 }
 
@@ -345,29 +349,14 @@ namespace TankWars
                     theWorld.removeBeam(beam);
                 }
 
-                // Update tanks if dead or on cooldown
-                foreach(Tank tank in theWorld.getTanks().Values)
+                // Remove collected powerups from world
+                foreach (Powerup power in powerUpsToRemove)
                 {
-                    // Respawn dead tanks
-                    if (tank.getDied())
-                    {
-                        if(tank.getFramesSinceDied() >= Constants.respawnRate)
-                        {
-                            tank.resetDeath();
-                            tank.setLocation(generateRandomLocation());
-                        }
-                        else
-                        {
-                            tank.incrementFramesSinceDead();
-                        }
-                    }
-
-                    // Advance the cooldown timer
-                    tank.incrementFramesSinceFired();
+                    theWorld.removePowerup(power);
                 }
 
                 // Remove disconnected Tanks
-                foreach(Tank tank in tanksToRemove)
+                foreach (Tank tank in tanksToRemove)
                 {
                     // Remove client associated with this tank
                     SocketState client = IDToClient[tank.getID()];
@@ -429,16 +418,24 @@ namespace TankWars
                         // Create beams
                         else if(input.getFire().Equals("alt"))
                         {
-                            // Arguments
-                            int beamID = theWorld.getNumBeamsCreated();
-                            Vector2D beamLocation = tank.getLocation();
-                            Vector2D beamDirection = input.getTurretDirection();
-                            int beamOwner = tank.getID();
+                            if (tank.getAbleToFireBeam())
+                            {
+                                // Arguments
+                                int beamID = theWorld.getNumBeamsCreated();
+                                Vector2D beamLocation = tank.getLocation();
+                                Vector2D beamDirection = input.getTurretDirection();
+                                int beamOwner = tank.getID();
 
-                            Beam beam = new Beam(beamID, beamLocation, beamDirection, beamOwner);
-                            theWorld.addBeam(beam);
+                                Beam beam = new Beam(beamID, beamLocation, beamDirection, beamOwner);
+                                theWorld.addBeam(beam);
+
+                                tank.setBeamNotFireable();
+                            }                           
                         }
                     }
+
+                    // Remove inputs after they've been processed
+                    clientInputs.Clear();
 
                     // Update existing projectile location
                     foreach (Projectile proj in theWorld.getProjectiles().Values)
@@ -457,7 +454,12 @@ namespace TankWars
                                     collideTank.decreaseHitpoints();
                                     proj.setDead();
 
-                                    // Increment score of the tank that fired the projectile
+                                    // Update score
+                                    if (collideTank.getDied())
+                                    {
+                                        Tank ownerTank = theWorld.getTanks()[proj.getOwnerID()];
+                                        ownerTank.incrementScore();
+                                    }                                  
                                 }
                             }
 
@@ -475,8 +477,58 @@ namespace TankWars
                         }
                     }
 
-                    // Remove inputs after they've been processed
-                    clientInputs.Clear();
+                    foreach (Beam beam in theWorld.getBeams().Values)
+                    {
+                        foreach(Tank tank in theWorld.getTanks().Values)
+                        {
+                            Vector2D beamOrigin = beam.getOrigin();
+                            Vector2D beamDir = beam.getDirection();
+                            Vector2D tankLocation = tank.getLocation();
+                            double radius = 30;
+
+                            if (Intersects(beamOrigin, beamDir, tankLocation, radius))
+                            {
+                                tank.kill();
+                                Tank ownerTank = theWorld.getTanks()[beam.getOwnerID()];
+                                ownerTank.incrementScore();
+                            }
+                        }
+                    }
+
+                    // Update tanks if dead or on cooldown
+                    foreach (Tank tank in theWorld.getTanks().Values)
+                    {
+                        // Respawn dead tanks
+                        if (tank.getDied())
+                        {
+                            if (tank.getFramesSinceDied() >= Constants.respawnRate)
+                            {
+                                tank.resetDeath();
+                                tank.setLocation(generateRandomLocation());
+                            }
+                            else
+                            {
+                                tank.incrementFramesSinceDead();
+                            }
+                        }
+
+                        // Advance the cooldown timer
+                        tank.incrementFramesSinceFired();
+                    }
+
+                    // Check powerup collisions
+                    foreach(Powerup power in theWorld.getPowerups().Values)
+                    {
+                        if (collidesWithTankOrWall(out object collidedWith, power.getLocation()))
+                        {
+                            if (collidedWith.GetType().Equals(typeof(Tank)))
+                            {
+                                Tank collidedTank = (Tank)collidedWith;
+                                collidedTank.setBeamFireable();
+                                power.setDead();
+                            }
+                        }
+                    }
 
                     // Create powerups
                     if(framesSinceLastPowerup > powerupDelay && theWorld.getPowerups().Count < Constants.maxPowerups)
@@ -494,6 +546,46 @@ namespace TankWars
             }
             framesSinceLastPowerup++;
         }
-        
+
+        /// <summary>
+        /// Determines if a ray interescts a circle
+        /// </summary>
+        /// <param name="rayOrig">The origin of the ray</param>
+        /// <param name="rayDir">The direction of the ray</param>
+        /// <param name="center">The center of the circle</param>
+        /// <param name="r">The radius of the circle</param>
+        /// <returns></returns>
+        private static bool Intersects(Vector2D rayOrig, Vector2D rayDir, Vector2D center, double r)
+        {
+            // ray-circle intersection test
+            // P: hit point
+            // ray: P = O + tV
+            // circle: (P-C)dot(P-C)-r^2 = 0
+            // substituting to solve for t gives a quadratic equation:
+            // a = VdotV
+            // b = 2(O-C)dotV
+            // c = (O-C)dot(O-C)-r^2
+            // if the discriminant is negative, miss (no solution for P)
+            // otherwise, if both roots are positive, hit
+
+            double a = rayDir.Dot(rayDir);
+            double b = ((rayOrig - center) * 2.0).Dot(rayDir);
+            double c = (rayOrig - center).Dot(rayOrig - center) - r * r;
+
+            // discriminant
+            double disc = b * b - 4.0 * a * c;
+
+            if (disc < 0.0)
+                return false;
+
+            // find the signs of the roots
+            // technically we should also divide by 2a
+            // but all we care about is the sign, not the magnitude
+            double root1 = -b + Math.Sqrt(disc);
+            double root2 = -b - Math.Sqrt(disc);
+
+            return (root1 > 0.0 && root2 > 0.0);
+        }
+
     }
 }

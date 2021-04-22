@@ -144,6 +144,7 @@ namespace TankWars
         public void addWall(Wall newWall)
         {
             Walls.Add(newWall.getID(), newWall);
+            numWallsCreated++;
         }
 
         /// <summary>
@@ -263,14 +264,14 @@ namespace TankWars
             return numBeamsCreated;
         }
 
+        /// <summary>
+        /// Returns the number of walls that have been created
+        /// since the start of the game
+        /// </summary>
+        /// <returns></returns>
         public int getNumWallsCreated()
         {
             return numWallsCreated;
-        }
-
-        public void incrementNumWalls()
-        {
-            numWallsCreated++;
         }
 
     }

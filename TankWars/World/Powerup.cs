@@ -74,5 +74,13 @@ namespace TankWars
         {
             return died;
         }
+
+        /// <summary>
+        /// Sets the value of died to true
+        /// </summary>
+        public void setDead()
+        {
+            died = true;
+        }
     }
 }
