@@ -345,21 +345,25 @@ namespace TankWars
                     theWorld.removeBeam(beam);
                 }
 
-                // Respawn dead tanks
+                // Update tanks if dead or on cooldown
                 foreach(Tank tank in theWorld.getTanks().Values)
                 {
+                    // Respawn dead tanks
                     if (tank.getDied())
                     {
                         if(tank.getFramesSinceDied() >= Constants.respawnRate)
                         {
-                            tank.resetTank();
+                            tank.resetDeath();
                             tank.setLocation(generateRandomLocation());
                         }
                         else
                         {
-                            tank.updateRespawnCounter();
+                            tank.incrementFramesSinceDead();
                         }
                     }
+
+                    // Advance the cooldown timer
+                    tank.incrementFramesSinceFired();
                 }
 
                 // Remove disconnected Tanks
@@ -403,15 +407,23 @@ namespace TankWars
 
                         // Create new projectile
                         if (input.getFire().Equals("main"))
-                        {                           
-                            // Arguments
-                            int projID = theWorld.getNumProjectileCreated();
-                            Vector2D projLocation = tank.getLocation();
-                            Vector2D projDirection = input.getTurretDirection();
-                            int projOwner = tank.getID();
+                        {                 
+                            if (tank.getAbleToFire())
+                            {
+                                // Arguments
+                                int projID = theWorld.getNumProjectileCreated();
+                                Vector2D projLocation = tank.getLocation();
+                                Vector2D projDirection = input.getTurretDirection();
+                                int projOwner = tank.getID();
 
-                            Projectile proj = new Projectile(projID, projLocation, projDirection, false, projOwner);
-                            theWorld.addProjectile(proj);
+                                // Create projectile
+                                Projectile proj = new Projectile(projID, projLocation, projDirection, false, projOwner);
+                                theWorld.addProjectile(proj);
+
+                                // Reset Cooldown
+                                tank.startFireCooldown();
+                            }
+                            
                         }
 
                         // Create beams

@@ -81,6 +81,21 @@ namespace TankWars
         private int framesSinceDied = 0;
 
         /// <summary>
+        /// How many frames have passed since this tank last fired
+        /// </summary>
+        private int framesSinceFired = 0;
+
+        /// <summary>
+        /// Whether or not the tank is able to fire a normal shot
+        /// </summary>
+        private bool ableToFire = true;
+
+        /// <summary>
+        /// Whether oro not the tank is able to fire a beam
+        /// </summary>
+        private bool ableToFireBeam = false;
+
+        /// <summary>
         /// Default tank constructor
         /// </summary>
         public Tank()
@@ -200,17 +215,81 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Returns how many frames have passed since this tank last fired
+        /// </summary>
+        /// <returns></returns>
+        public int getFramesSinceFired()
+        {
+            return framesSinceFired;
+        }
+
+        /// <summary>
+        /// Returns whether or not the tank is able to fire a normal shot
+        /// </summary>
+        /// <returns></returns>
+        public bool getAbleToFire()
+        {
+            return ableToFire;
+        }
+
+        /// <summary>
+        /// Return whether or noto the tank is able to fire a beam
+        /// </summary>
+        /// <returns></returns>
+        public bool getAbleToFireBeam()
+        {
+            return ableToFireBeam;
+        }
+
+        /// <summary>
+        /// Makes the tank able to fire a beam
+        /// </summary>
+        public void setBeamFireable()
+        {
+            ableToFireBeam = true;
+        }
+
+        /// <summary>
+        /// Makes the tank unable to fire a beam
+        /// </summary>
+        public void setBeamNotFireable()
+        {
+            ableToFireBeam = false;
+        }
+
+        /// <summary>
         /// Increments the value of framesSinceDead
         /// </summary>
-        public void updateRespawnCounter()
+        public void incrementFramesSinceDead()
         {
             framesSinceDied++;
         }
 
         /// <summary>
+        /// Increments the value of framesSinceFired
+        /// </summary>
+        public void incrementFramesSinceFired()
+        {
+            framesSinceFired++;
+            if(framesSinceFired > Constants.framesPerShot)
+            {
+                ableToFire = true;
+            }
+        }
+
+        /// <summary>
+        /// Prevents tank from firing for a certain amount of time
+        /// </summary>
+        public void startFireCooldown()
+        {
+            ableToFire = false;
+            framesSinceFired = 0;
+        }
+
+        /// <summary>
         /// Resets the values of died and framesSinceDead to defaults
         /// </summary>
-        public void resetTank()
+        public void resetDeath()
         {
             framesSinceDied = 0;
             died = false;

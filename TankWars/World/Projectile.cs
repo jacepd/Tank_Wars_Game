@@ -120,8 +120,19 @@ namespace TankWars
         /// <param name="input"></param>
         public void updateProjectile()
         {
-            Vector2D aiming = direction;
-            location = aiming * Constants.projectileSpeed;           
+            for (int i = 0; i < Constants.projectileSpeed; i++)
+            {
+                double currX = location.GetX();
+                double currY = location.GetY();
+
+                double dirX = direction.GetX();
+                double dirY = direction.GetY();
+
+                double newX = currX + dirX;
+                double newY = currY + dirY;
+
+                location = new Vector2D(newX, newY);
+            }           
         }
     }
 }
