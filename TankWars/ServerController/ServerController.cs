@@ -147,10 +147,10 @@ namespace TankWars
         /// <returns></returns>
         private Vector2D generateRandomLocation()
         {
-            Random rand = new Random(worldSize - 100);
+            Random rand = new Random();
 
-            double randX = 50 + rand.Next() - (worldSize  /2);
-            double randY = 50 + rand.Next() - (worldSize / 2);
+            double randX = 50 + rand.Next(worldSize - 100) - (worldSize  /2);
+            double randY = 50 + rand.Next(worldSize - 100) - (worldSize / 2);
 
             Vector2D randomLocation = new Vector2D(randX, randY);
 

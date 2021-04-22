@@ -242,13 +242,21 @@ namespace TankWars
             aiming = input.getTurretDirection();
             
             // Wraparound
-            if(x > Constants.worldSize)
+            if(x > Constants.worldSize / 2)
             {
                 x -= Constants.worldSize;
             }
-            if (y > Constants.worldSize)
+            if (x < -Constants.worldSize / 2)
+            {
+                x += Constants.worldSize;
+            }
+            if (y > Constants.worldSize / 2)
             {
                 y -= Constants.worldSize;
+            }
+            if (y < -Constants.worldSize / 2)
+            {
+                y += Constants.worldSize;
             }
 
             location = new Vector2D(x, y);
