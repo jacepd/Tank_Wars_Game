@@ -68,7 +68,7 @@ namespace Server
                                 break;
                             case "MSPerFrame":
                                 Constants.MSPerFrame = reader.ReadElementContentAsInt();
-                                break;
+                                break;                                
                             case "FramesPerShot":
                                 Constants.framesPerShot = reader.ReadElementContentAsInt();
                                 break;
@@ -91,50 +91,75 @@ namespace Server
                                 Constants.maxPowerupDelay = reader.ReadElementContentAsInt();
                                 break;
                             case "Wall":
-                                while (reader.Read()) // While we're still inside the wall node?
-                                {
-                                    double firstX = 0;
-                                    double firstY = 0;
-                                    double secondX = 0;
-                                    double secondY = 0;
-
-                                    if (reader.Name.Equals("p1"))
-                                    {
-                                        string tag = reader.Name;
-                                        if (reader.Name.Equals("x"))
-                                        {
-                                            firstX = reader.ReadElementContentAsDouble();
-                                        }
-                                        else if (reader.Name.Equals("y"))
-                                        {
-                                            firstY = reader.ReadElementContentAsDouble();
-                                        }
-
-                                    }
-                                    else if (reader.Name.Equals("p2"))
-                                    {
-                                        if (reader.Name.Equals("x"))
-                                        {
-                                            secondX = reader.ReadElementContentAsDouble();
-                                        }
-                                        else if (reader.Name.Equals("y"))
-                                        {
-                                            secondY = reader.ReadElementContentAsDouble();
-                                        }
-                                    }
-                                    Vector2D firstEndpoint = new Vector2D(firstX, firstY);
-                                    Vector2D secondEndpoint = new Vector2D(secondX, secondY);
-
-                                    Wall wall = new Wall(world.getNumWallsCreated(), firstEndpoint, secondEndpoint);
-
-                                    world.addWall(wall);
-                                }
-                               
+                                ParseWalls(reader);
                                 break;
                         }
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Parses walls from an XML reader
+        /// </summary>
+        /// <param name="reader"></param>
+        private static void ParseWalls(XmlReader reader)
+        {
+            double firstX = 0;
+            double firstY = 0;
+            double secondX = 0;
+            double secondY = 0;
+
+            using (XmlReader wallReader = reader.ReadSubtree())
+            {
+                while (wallReader.Read())
+                {
+                    if (wallReader.IsStartElement())
+                    {
+                        if (wallReader.Name.Equals("p1"))
+                        {
+                            using (XmlReader pointReader = wallReader.ReadSubtree())
+                            {
+                                while (pointReader.Read())
+                                {
+                                    if (pointReader.IsStartElement())
+                                    {
+                                        if (pointReader.Name.Equals("x"))
+                                        {
+                                            firstX = pointReader.ReadElementContentAsDouble();
+                                            firstY = pointReader.ReadElementContentAsDouble();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if (wallReader.Name.Equals("p2"))
+                        {
+                            using (XmlReader pointReader = wallReader.ReadSubtree())
+                            {
+                                while (pointReader.Read())
+                                {
+                                    if (pointReader.IsStartElement())
+                                    {
+                                        if (pointReader.Name.Equals("x"))
+                                        {
+                                            secondX = pointReader.ReadElementContentAsDouble();
+                                            secondY = pointReader.ReadElementContentAsDouble();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            Vector2D firstEndpoint = new Vector2D(firstX, firstY);
+            Vector2D secondEndpoint = new Vector2D(secondX, secondY);
+
+            Wall wall = new Wall(world.getNumWallsCreated(), firstEndpoint, secondEndpoint);
+
+            world.addWall(wall);
         }
 
         /// <summary>

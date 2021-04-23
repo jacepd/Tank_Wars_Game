@@ -87,7 +87,7 @@ namespace TankWars
         /// <returns></returns>
         public bool isVertical()
         {
-            double difference = (firstEndpoint.GetX() - secondEndpoint.GetY());
+            double difference = (firstEndpoint.GetX() - secondEndpoint.GetX());
             return Math.Abs(difference) < 0.0001;
         }
     }

@@ -120,7 +120,7 @@ namespace TankWars
                     clientToID.Add(state, numPlayers);
                     IDToClient.Add(numPlayers, state);
 
-                    Vector2D tankLocation = generateRandomLocation();
+                    Vector2D tankLocation = generateRandomLocation(30);
                     Tank tank = new Tank(numPlayers, playerName, tankLocation);
                     theWorld.addTank(tank);
 
@@ -210,7 +210,7 @@ namespace TankWars
         /// Returns a random location that doesn't overlap any pre-existing objects
         /// </summary>
         /// <returns></returns>
-        private Vector2D generateRandomLocation()
+        private Vector2D generateRandomLocation(int radius)
         {
             Random rand = new Random();
 
@@ -219,9 +219,9 @@ namespace TankWars
 
             Vector2D randomLocation = new Vector2D(randX, randY);
 
-            if (collidesWithTankOrWall(out object collisionObj, randomLocation))
+            if (collidesWithTankOrWall(out object collisionObj, randomLocation, radius))
             {
-                return generateRandomLocation();
+                return generateRandomLocation(radius);
             }
             else
             {
@@ -234,11 +234,44 @@ namespace TankWars
         /// </summary>
         /// <param name="randomLocation"></param>
         /// <returns></returns>
-        private bool collidesWithTankOrWall(out object collidedWith, Vector2D objectLocation)
+        private bool collidesWithTankOrWall(out object collidedWith, Vector2D objectLocation, int objectRadius)
         {
             collidedWith = null;
             double objX = objectLocation.GetX();
             double objY = objectLocation.GetY();
+
+            // Check for wall collisions
+            foreach (Wall wall in theWorld.getWalls().Values)
+            {
+                double wallFirstX = wall.getFirstEndpoint().GetX();
+                double wallSecondX = wall.getSecondEndpoint().GetX();
+                double wallFirstY = wall.getFirstEndpoint().GetY();
+                double wallSecondY = wall.getSecondEndpoint().GetY();
+
+                if (wall.isVertical())
+                {
+                    if(Math.Abs(objX - wallFirstX) < 25 + objectRadius)
+                    {
+                        if ((objY - objectRadius < wallFirstY + 25 && objY + objectRadius > wallSecondY - 25) || (objY - objectRadius < wallSecondY + 25 && objY + objectRadius > wallFirstY - 25))
+                        {
+                            collidedWith = wall;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if(Math.Abs(objY - wallFirstY) < 25 + objectRadius)
+                    {
+                        if ((objX - objectRadius < wallFirstX + 25 && objX + objectRadius > wallSecondX - 25) || (objX - objectRadius < wallSecondX + 25 && objX + objectRadius > wallFirstX - 25))
+                        {
+                            collidedWith = wall;
+                            return true;
+                        }
+                    }
+
+                }
+            }
 
             // Check for tank collisions
             foreach (Tank tank in theWorld.getTanks().Values)
@@ -251,39 +284,6 @@ namespace TankWars
                 {
                     collidedWith = tank;
                     return true;
-                }
-            }
-
-            // Check for wall collisions
-            foreach (Wall wall in theWorld.getWalls().Values)
-            {
-                double wallFirstX = wall.getFirstEndpoint().GetX();
-                double wallSecondX = wall.getSecondEndpoint().GetX();
-                double wallFirstY = wall.getFirstEndpoint().GetY();
-                double wallSecondY = wall.getSecondEndpoint().GetY();
-
-                if (wall.isVertical())
-                {
-                    if(Math.Abs(objX - wallFirstX) < 25)
-                    {
-                        if ((objY < wallFirstY + 25 && objY > wallSecondY - 25) || (objY < wallSecondY + 25 && objY > wallFirstY - 25))
-                        {
-                            collidedWith = wall;
-                            return true;
-                        }
-                    }
-                }
-                else
-                {
-                    if(Math.Abs(objY - wallFirstY) < 25)
-                    {
-                        if ((objX < wallFirstX + 25 && objX > wallSecondX - 25) || (objX < wallSecondX + 25 && objX > wallFirstX - 25))
-                        {
-                            collidedWith = wall;
-                            return true;
-                        }
-                    }
-
                 }
             }
 
@@ -391,7 +391,7 @@ namespace TankWars
                         tank.updateTank(input);
 
                         // Check for tank collisions
-                        if (collidesWithTankOrWall(out object collidedWith, tank.getLocation()))
+                        if (collidesWithTankOrWall(out object collidedWith, tank.getLocation(), 30))
                         {
                             if (collidedWith.GetType().Equals(typeof(Wall)))
                             {
@@ -448,7 +448,7 @@ namespace TankWars
                         proj.updateProjectile();
 
                         // Check for collisions
-                        if (!proj.getDied() && collidesWithTankOrWall(out object collidedWith, proj.getLocation()))
+                        if (!proj.getDied() && collidesWithTankOrWall(out object collidedWith, proj.getLocation(), 0))
                         {
                             // Tank collision
                             if (collidedWith.GetType().Equals(typeof(Tank)))
@@ -509,7 +509,7 @@ namespace TankWars
                             if (tank.getFramesSinceDied() >= Constants.respawnRate)
                             {
                                 tank.resetDeath();
-                                tank.setLocation(generateRandomLocation());
+                                tank.setLocation(generateRandomLocation(30));
                             }
                             else
                             {
@@ -524,7 +524,7 @@ namespace TankWars
                     // Check powerup collisions
                     foreach(Powerup power in theWorld.getPowerups().Values)
                     {
-                        if (collidesWithTankOrWall(out object collidedWith, power.getLocation()))
+                        if (collidesWithTankOrWall(out object collidedWith, power.getLocation(), 0))
                         {
                             if (collidedWith.GetType().Equals(typeof(Tank)))
                             {
@@ -538,7 +538,7 @@ namespace TankWars
                     // Create powerups
                     if(framesSinceLastPowerup > powerupDelay && theWorld.getPowerups().Count < Constants.maxPowerups)
                     {
-                        Powerup powerup = new Powerup(theWorld.getNumPowerupsCreated(), generateRandomLocation(), false);
+                        Powerup powerup = new Powerup(theWorld.getNumPowerupsCreated(), generateRandomLocation(0), false);
                         theWorld.addPowerup(powerup);
 
                         // Reset frame counter and randomize delay
