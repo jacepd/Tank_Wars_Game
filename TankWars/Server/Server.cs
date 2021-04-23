@@ -90,12 +90,25 @@ namespace Server
                             case "MaxPowerupDelay":
                                 Constants.maxPowerupDelay = reader.ReadElementContentAsInt();
                                 break;
+                            case "Mode":
+                                Constants.mode = reader.ReadElementContentAsString();
+                                break;
                             case "Wall":
                                 ParseWalls(reader);
                                 break;
                         }
                     }
                 }
+            }
+
+            // Set the max hitpoints based on the game mode
+            if (Constants.mode.Equals("Default"))
+            {
+                Constants.hitpoints = Constants.defaultHitpoints;
+            }
+            else if (Constants.mode.Equals("Power"))
+            {
+                Constants.hitpoints = Constants.powerHitpoints;
             }
         }
 

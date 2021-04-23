@@ -18,7 +18,7 @@ namespace TankWars
         /// <summary>
         /// The height and width of the world
         /// </summary>
-        public static int worldSize{ get; set; }
+        public static int worldSize { get; set; }
 
         /// <summary>
         /// The amount of time it takes the server to update the world
@@ -59,5 +59,21 @@ namespace TankWars
         /// The maximum number of frames that can pass before a powerup is attempted to be created
         /// </summary>
         public static int maxPowerupDelay { get; set; }
+
+        /// <summary>
+        /// The current gamemode
+        /// Possible values: "Default", "Power"
+        /// </summary>
+        public static string mode { get; set;}
+
+        /// <summary>
+        /// The default value of framesPerShot
+        /// </summary>
+        public static int defaultHitpoints = 3;
+
+        /// <summary>
+        /// The value of framesPerShot in "Power" mode
+        /// </summary>
+        public static int powerHitpoints = 6;
     }
 }

@@ -350,6 +350,14 @@ namespace TankWars
         }
 
         /// <summary>
+        /// Fully restores health
+        /// </summary>
+        public void restoreHealth()
+        {
+            hitPoints = Constants.hitpoints;
+        }
+
+        /// <summary>
         /// Kills the tank
         /// </summary>
         public void kill()

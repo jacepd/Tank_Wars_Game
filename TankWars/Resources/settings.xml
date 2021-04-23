@@ -8,6 +8,7 @@
 	<EngineStrength>3</EngineStrength>
 	<MaxPowerups>2</MaxPowerups>
 	<MaxPowerupDelay>1650</MaxPowerupDelay>
+	<Mode>"Default"</Mode>
   
   
   <!-- top border -->

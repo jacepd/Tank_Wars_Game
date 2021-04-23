@@ -531,6 +531,11 @@ namespace TankWars
                                 Tank collidedTank = (Tank)collidedWith;
                                 collidedTank.setBeamFireable();
                                 power.setDead();
+
+                                if (Constants.mode.Equals("Power"))
+                                {
+                                    collidedTank.restoreHealth();
+                                }
                             }
                         }
                     }
