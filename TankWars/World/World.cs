@@ -274,5 +274,134 @@ namespace TankWars
             return numWallsCreated;
         }
 
+        /// <summary>
+        /// Returns a random location that doesn't overlap any pre-existing objects
+        /// </summary>
+        /// <returns></returns>
+        public Vector2D generateRandomLocation(int radius)
+        {
+            Random rand = new Random();
+
+            double randX = 50 + rand.Next(size - 100) - (size / 2);
+            double randY = 50 + rand.Next(size - 100) - (size / 2);
+
+            Vector2D randomLocation = new Vector2D(randX, randY);
+
+            if (collidesWithTankOrWall(out object collisionObj, randomLocation, radius))
+            {
+                return generateRandomLocation(radius);
+            }
+            else
+            {
+                return randomLocation;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the given point overlaps any pre-existing objects
+        /// </summary>
+        /// <param name="randomLocation"></param>
+        /// <returns></returns>
+        public bool collidesWithTankOrWall(out object collidedWith, Vector2D objectLocation, int objectRadius)
+        {
+            collidedWith = null;
+            double objX = objectLocation.GetX();
+            double objY = objectLocation.GetY();
+
+            // Check for wall collisions
+            foreach (Wall wall in Walls.Values)
+            {
+                double wallFirstX = wall.getFirstEndpoint().GetX();
+                double wallSecondX = wall.getSecondEndpoint().GetX();
+                double wallFirstY = wall.getFirstEndpoint().GetY();
+                double wallSecondY = wall.getSecondEndpoint().GetY();
+
+                if (wall.isVertical())
+                {
+                    if (Math.Abs(objX - wallFirstX) < 25 + objectRadius)
+                    {
+                        if ((objY - objectRadius < wallFirstY + 25 && objY + objectRadius > wallSecondY - 25) || (objY - objectRadius < wallSecondY + 25 && objY + objectRadius > wallFirstY - 25))
+                        {
+                            collidedWith = wall;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (Math.Abs(objY - wallFirstY) < 25 + objectRadius)
+                    {
+                        if ((objX - objectRadius < wallFirstX + 25 && objX + objectRadius > wallSecondX - 25) || (objX - objectRadius < wallSecondX + 25 && objX + objectRadius > wallFirstX - 25))
+                        {
+                            collidedWith = wall;
+                            return true;
+                        }
+                    }
+
+                }
+            }
+
+            // Check for tank collisions
+            foreach (Tank tank in Tanks.Values)
+            {
+                double tankX = tank.getLocation().GetX();
+                double tankY = tank.getLocation().GetY();
+
+                double distance = Math.Sqrt((objX - tankX) * (objX - tankX) + (objY - tankY) * (objY - tankY));
+                if (distance < 30)
+                {
+                    collidedWith = tank;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Updates the locations of all projectiles in the world
+        /// </summary>
+        public void updateProjectileLocations()
+        {
+            foreach (Projectile proj in Projectiles.Values)
+            {
+                proj.updateProjectile();
+
+                // Check for collisions
+                if (!proj.getDied() && collidesWithTankOrWall(out object collidedWith, proj.getLocation(), 0))
+                {
+                    // Tank collision
+                    if (collidedWith.GetType().Equals(typeof(Tank)))
+                    {
+                        Tank collideTank = (Tank)collidedWith;
+                        if (collideTank.getID() != proj.getOwnerID())
+                        {
+                            collideTank.decreaseHitpoints();
+                            proj.setDead();
+
+                            // Update score
+                            if (collideTank.getDied())
+                            {
+                                Tank ownerTank = Tanks[proj.getOwnerID()];
+                                ownerTank.incrementScore();
+                            }
+                        }
+                    }
+
+                    // Wall collision
+                    else
+                    {
+                        proj.setDead();
+                    }
+                }
+
+                // Delete projectile if out of bounds
+                if (Math.Abs(proj.getLocation().GetX()) > (size / 2) || Math.Abs(proj.getLocation().GetY()) > (size / 2))
+                {
+                    proj.setDead();
+                }
+            }
+        }
+
     }
 }
