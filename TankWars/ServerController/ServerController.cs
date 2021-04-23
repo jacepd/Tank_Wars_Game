@@ -191,7 +191,7 @@ namespace TankWars
                         break;
                     }
 
-                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
+                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);                   
 
                     // Prevents multiple inputs in one frame
                     if (!clientInputs.ContainsValue(clientToID[state]))
@@ -406,7 +406,7 @@ namespace TankWars
                     {
                         if (theWorld.collidesWithTankOrWall(out object collidedWith, power.getLocation(), 0))
                         {
-                            if (collidedWith.GetType().Equals(typeof(Tank)))
+                            if (!power.getDied() && collidedWith.GetType().Equals(typeof(Tank)))
                             {
                                 Tank collidedTank = (Tank)collidedWith;
                                 collidedTank.setBeamFireable();
@@ -428,8 +428,8 @@ namespace TankWars
 
                         // Reset frame counter and randomize delay
                         framesSinceLastPowerup = 0;
-                        Random rand = new Random(Constants.maxPowerupDelay);
-                        powerupDelay = rand.Next();
+                        Random rand = new Random();
+                        powerupDelay = rand.Next(Constants.maxPowerupDelay);
                     }
 
                 }

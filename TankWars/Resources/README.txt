@@ -41,3 +41,5 @@ disconnected tank.
 The new gamemode we implementeed increases the max health for all tanks to 6 and makes it so that powerups fully restore 
 health in addition to allowing the player to fire a beam. In order to access this gamemode, the value of Mode in the 
 settings file must be changed from "Default" to "Power".
+
+We still have a bug where you cannot fire a beam whilst moving.

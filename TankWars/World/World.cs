@@ -194,6 +194,10 @@ namespace TankWars
         /// <param name="newBeam"></param>
         public void addBeam(Beam newBeam)
         {
+            if (Beams.ContainsKey(newBeam.getID()))
+            {
+                Beams.Remove(newBeam.getID());
+            }
             Beams.Add(newBeam.getID(), newBeam);
             numBeamsCreated++;
         }
