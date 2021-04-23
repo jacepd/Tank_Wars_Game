@@ -26,7 +26,7 @@ namespace TankWars
         private Dictionary<int, SocketState> IDToClient;
 
         // Maps inputs sent by clients to the playerID of the client that sent them
-        private Dictionary<ControlCommand, int> clientInputs; 
+        private Dictionary<int, ControlCommand> clientInputs; 
 
         public delegate void ServerStartupHandler(string message);
         public event ServerStartupHandler ServerStartupEvent;
@@ -50,7 +50,7 @@ namespace TankWars
             powerupDelay = Constants.maxPowerupDelay;
             framesSinceLastPowerup = 0;
 
-            clientInputs = new Dictionary<ControlCommand, int>();
+            clientInputs = new Dictionary<int, ControlCommand>();
         }
 
         /// <summary>
@@ -191,18 +191,18 @@ namespace TankWars
                         break;
                     }
 
-                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);                   
+                    ControlCommand newInput = JsonConvert.DeserializeObject<ControlCommand>(item);
 
                     // Prevents multiple inputs in one frame
-                    if (!clientInputs.ContainsValue(clientToID[state]))
+                    if (!clientInputs.ContainsKey(clientToID[state]))
                     {
-                        clientInputs.Add(newInput, clientToID[state]);
+                        clientInputs.Add(clientToID[state], newInput);
                     }
                 }
             }
 
             // Continue event loop
-            state.RemoveData(0, inputData.Length - lastItemLength);
+            state.RemoveData(0, inputData.Length);
             Networking.GetData(state);
         }           
 
@@ -298,10 +298,17 @@ namespace TankWars
             {
                 lock(clientInputs)
                 {
-                    foreach (ControlCommand input in clientInputs.Keys)
+                    foreach (ControlCommand input in clientInputs.Values)
                     {
+                        int playerID = 0;
+                        foreach(int index in clientInputs.Keys)
+                        {
+                            if (clientInputs[index].Equals(input))
+                            {
+                                playerID = index;
+                            }
+                        }
                         // Update tanks
-                        int playerID = clientInputs[input];
                         Tank tank = theWorld.getTanks()[playerID];
                         Vector2D prevLocation = tank.getLocation();
                         tank.updateTank(input);
@@ -404,7 +411,7 @@ namespace TankWars
                     // Check powerup collisions
                     foreach(Powerup power in theWorld.getPowerups().Values)
                     {
-                        if (theWorld.collidesWithTankOrWall(out object collidedWith, power.getLocation(), 0))
+                        if (theWorld.collidesWithTankOrWall(out object collidedWith, power.getLocation(), 20))
                         {
                             if (!power.getDied() && collidedWith.GetType().Equals(typeof(Tank)))
                             {
